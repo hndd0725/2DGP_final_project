@@ -96,7 +96,7 @@ class Run:
 
 
 
-class Hit:
+class Throw:
     @staticmethod
     def enter(batter, e):
         batter.frame = 0 # pico2d import 필요
@@ -105,8 +105,8 @@ class Hit:
 
     @staticmethod
     def exit(batter, e):
-
-         pass
+        batter.fire_ball()
+        pass
 
     @staticmethod
     def do(batter):
@@ -139,9 +139,9 @@ class StateMachine:
         self.batter = batter
         self.cur_state = Idle
         self.transitions = {
-            Idle: {space_down:Hit, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
+            Idle: {space_down:Throw, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
             Run: {space_down:Run,right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
-            Hit: {hit_out:Idle}
+            Throw: {hit_out:Idle}
         }
 
     def start(self):

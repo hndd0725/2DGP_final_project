@@ -1,5 +1,5 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
-
+from pico2d import *
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
 import game_world
@@ -47,7 +47,6 @@ class Idle:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + 1) % 2
-
     @staticmethod
     def draw(batter):
         batter.image.clip_draw(batter.frame * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
