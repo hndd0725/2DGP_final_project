@@ -1,2 +1,2 @@
-# 2DGP_final_project
+# 2DGP_project
  
