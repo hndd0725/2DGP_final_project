@@ -1,6 +1,8 @@
 from pico2d import *
 
+
 import game_world
+from ball import Ball
 from grass import Grass
 from batter import Batter
 from pitcher import Pitcher
@@ -32,10 +34,11 @@ def create_world():
     running = True
 
     hitter = Batter()
-    game_world.add_object(hitter, 1)
+    game_world.add_object(hitter, 2)
     pitcher = Pitcher()
-    game_world.add_object(pitcher, 1)
-
+    game_world.add_object(pitcher, 2)
+    #ball=Ball()
+    #game_world.add_object(ball, 1)
 
     running = True
 

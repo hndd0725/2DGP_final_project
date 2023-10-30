@@ -34,7 +34,7 @@ def hit_out(e):
 # time_out = lambda e : e[0] == 'TIME_OUT'
 
 
-time=0
+
 class Idle:
 
     @staticmethod
@@ -91,8 +91,9 @@ class Hit:
 
     @staticmethod
     def exit(batter, e):
+        batter.fire_ball(1)
 
-         pass
+        pass
 
     @staticmethod
     def do(batter):
@@ -164,8 +165,8 @@ class Batter:
 
     def draw(self):
         self.state_machine.draw()
-    def fire_ball(self):
-        ball=Ball(self.x,self.y,self.face_dir*10)
+    def fire_ball(self,sit):
+        ball=Ball(self.x,self.y,self.face_dir*10,sit)
         game_world.add_object(ball,1)
         if self.face_dir==1:
             print('FIREBALLto right')
