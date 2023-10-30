@@ -46,7 +46,9 @@ class Idle:
 
     @staticmethod
     def do(batter):
-        batter.frame = (batter.frame + 1) % 4
+        if batter.timer % 10 == 0:
+            batter.frame = (batter.frame + 1) % 4
+        batter.timer += 1
 
     @staticmethod
     def draw(batter):
@@ -110,8 +112,10 @@ class Throw:
 
     @staticmethod
     def do(batter):
-        batter.frame +=1
-        if batter.frame>= 8:
+        if batter.timer % 5 == 0:
+            batter.frame +=1
+        batter.timer+=1
+        if batter.frame>= 9:
             batter.state_machine.handle_event(('TIME_OUT', 0))
     @staticmethod
     def draw(batter):
@@ -132,7 +136,8 @@ class Throw:
                 batter.image.clip_draw(208 + 4 * 16 + 25 + 25, 130, 14, 30, batter.x, batter.y, 50, 80)
             case 7:
                 batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 50, 80)
-
+            case 8:
+                batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 50, 80)
 
 class StateMachine:
     def __init__(self, batter):
@@ -177,7 +182,7 @@ class Pitcher:
         self.image = load_image('Baseballplayers.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
-
+        self.timer=0
     def update(self):
         self.state_machine.update()
 

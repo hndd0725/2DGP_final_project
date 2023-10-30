@@ -4,6 +4,8 @@ from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDL
 
 import game_world
 from ball import Ball
+
+
 # state event check
 # ( state event type, event value )
 
@@ -25,14 +27,14 @@ def left_up(e):
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
-def time_out(e):
-    return e[0] == 'TIME_OUT'
+def click(e):
+    return e[0]=='INPUT' and e[1].type==SDL_MOUSEBUTTONDOWN
 def hit_out(e):
     return e[0] == 'TIME_OUT'
 # time_out = lambda e : e[0] == 'TIME_OUT'
 
 
-
+time=0
 class Idle:
 
     @staticmethod
@@ -46,7 +48,9 @@ class Idle:
 
     @staticmethod
     def do(batter):
-        batter.frame = (batter.frame + 1) % 2
+        if batter.timer%10==0:
+            batter.frame = (batter.frame + 1) % 2
+        batter.timer+=1
     @staticmethod
     def draw(batter):
         batter.image.clip_draw(batter.frame * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
@@ -117,7 +121,7 @@ class StateMachine:
         self.batter = batter
         self.cur_state = Idle
         self.transitions = {
-            Idle: {space_down:Hit, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
+            Idle: {click:Hit, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
             Run: {space_down:Run,right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
             Hit: {hit_out:Idle}
         }
@@ -141,10 +145,6 @@ class StateMachine:
     def draw(self):
         self.cur_state.draw(self.batter)
 
-
-
-
-
 class Batter:
     def __init__(self):
         self.x, self.y = 320, 120
@@ -155,7 +155,7 @@ class Batter:
         self.image = load_image('Baseballplayers.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
-
+        self.timer=0
     def update(self):
         self.state_machine.update()
 
@@ -171,3 +171,4 @@ class Batter:
             print('FIREBALLto right')
         elif self.face_dir==-1:
             print('FIREBALLto left')
+
