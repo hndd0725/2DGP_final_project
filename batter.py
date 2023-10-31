@@ -2,8 +2,9 @@
 from pico2d import *
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
+import ball
 import game_world
-from ball import Ball
+from ball import Ball,hit_ok
 
 
 # state event check
@@ -87,12 +88,11 @@ class Hit:
     @staticmethod
     def enter(batter, e):
         batter.frame = 0 # pico2d import 필요
+
         pass
 
     @staticmethod
     def exit(batter, e):
-        batter.fire_ball(1)
-
         pass
 
     @staticmethod
@@ -102,6 +102,7 @@ class Hit:
             batter.state_machine.handle_event(('TIME_OUT', 0))
     @staticmethod
     def draw(batter):
+
         match batter.frame:
             case 0:
                 batter.image.clip_draw(batter.frame * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
@@ -111,10 +112,12 @@ class Hit:
                 batter.image.clip_draw(32, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
             case 3:
                 batter.image.clip_draw(62, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
+                ball.hit_ok=True
             case 4:
                 batter.image.clip_draw(92, 90, 25, 40, batter.x + 50, batter.y, 200, 250)
             case 5:
                 batter.image.clip_draw(117, 90, 25, 38, batter.x, batter.y, 200, 250)
+
 
 
 class StateMachine:
@@ -168,8 +171,5 @@ class Batter:
     def fire_ball(self,sit):
         ball=Ball(self.x,self.y,5,sit)
         game_world.add_object(ball,1)
-        if self.face_dir==1:
-            print('FIREBALLto right')
-        elif self.face_dir==-1:
-            print('FIREBALLto left')
+
 

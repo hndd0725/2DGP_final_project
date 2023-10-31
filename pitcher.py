@@ -1,4 +1,5 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
+import random
 
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
@@ -106,7 +107,7 @@ class Throw:
 
     @staticmethod
     def exit(batter, e):
-        batter.fire_ball(0)#변화구는 2번
+        batter.fire_ball(random.randint(1, 2))#변화구는 2번
         pass
 
     @staticmethod
@@ -193,7 +194,3 @@ class Pitcher:
     def fire_ball(self,sit):
         ball=Ball(self.x,self.y,5,sit)
         game_world.add_object(ball,1)
-        if self.face_dir==1:
-            print('FIREBALLto right')
-        elif self.face_dir==-1:
-            print('FIREBALLto left')
