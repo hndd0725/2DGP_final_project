@@ -17,18 +17,34 @@ class Ball:
             self.size=1
         elif self.situation==1:
             self.size = 30
+        self.changeball=0
 
 
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
     def update(self):
+        if self.situation==2:
+            self.t = self.i / 100
+            self.size += 10 * self.t
+            self.x = (1 - self.t) * 420 + self.t * 430 + self.changeball
+            self.y = (1 - self.t) * 220 + self.t * 80
+            self.i += self.velocity
+            if self.i < 50:
+                self.changeball += 5
+                print(1)
+            if self.i >= 50:
+                self.changeball -= 5
+                print(2)
+            if (self.t >= 1):
+                game_world.remove_object(self)
         if self.situation==0:
             self.t = self.i / 100
             self.size+=10*self.t
-            self.x = (1 - self.t) * 420 + self.t * 430
+            self.x = (1 - self.t) * 420 + self.t * 430+self.changeball
             self.y= (1 - self.t) * 220 + self.t * 80
             self.i += self.velocity
+
             if(self.t>=1):
                 game_world.remove_object(self)
         if self.situation==1:

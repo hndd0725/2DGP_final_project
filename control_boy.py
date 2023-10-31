@@ -37,8 +37,6 @@ def create_world():
     game_world.add_object(hitter, 2)
     pitcher = Pitcher()
     game_world.add_object(pitcher, 2)
-    #ball=Ball()
-    #game_world.add_object(ball, 1)
 
     running = True
 
