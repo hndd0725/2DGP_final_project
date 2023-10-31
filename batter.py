@@ -166,7 +166,7 @@ class Batter:
     def draw(self):
         self.state_machine.draw()
     def fire_ball(self,sit):
-        ball=Ball(self.x,self.y,self.face_dir*10,sit)
+        ball=Ball(self.x,self.y,5,sit)
         game_world.add_object(ball,1)
         if self.face_dir==1:
             print('FIREBALLto right')
