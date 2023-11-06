@@ -1,6 +1,5 @@
 from pico2d import *
 
-import batter
 import game_world
 
 from batter import Batter
@@ -43,6 +42,7 @@ def init():
 
 def update():
     game_world.update()
+    # delay(0.1)
 
 
 def draw():
@@ -60,21 +60,3 @@ def resume():
     pass
 
 
-# def create_world():
-#     global running
-#     global grass
-#     global pitcher
-#     global hitter
-#
-#     running = True
-#
-#     hitter = Batter()
-#     game_world.add_object(hitter, 2)
-#     pitcher = Pitcher()
-#     game_world.add_object(pitcher, 2)
-#
-#     running = True
-#
-#
-#     grass = Grass()
-#     game_world.add_object(grass, 0)
