@@ -36,11 +36,11 @@ def hit_out(e):
 # time_out = lambda e : e[0] == 'TIME_OUT'
 
 #batterhit Action Speed
-TIME_PER_ACTIONhit = 0.7
+TIME_PER_ACTIONhit = 0.6
 ACTION_PER_TIMEhit = 1.0 / TIME_PER_ACTIONhit
 FRAMES_PER_ACTIONhit = 6
 FRAMES_PER_ACTIONhit= FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit#액션프래임속
-# #batteridle Action Speed
+#batteridle Action Speed
 TIME_PER_ACTION = 1
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 2
@@ -106,7 +106,6 @@ class Hit:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit * game_framework.frame_time) % 6
-        print(batter.frame)
         if int(batter.frame)>= 5:
             batter.state_machine.handle_event(('TIME_OUT', 0))
     @staticmethod

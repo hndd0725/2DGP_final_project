@@ -3,6 +3,7 @@ import random
 
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
+import game_framework
 import game_world
 from ball import Ball
 # state event check
@@ -31,7 +32,11 @@ def time_out(e):
 def hit_out(e):
     return e[0] == 'TIME_OUT'
 # time_out = lambda e : e[0] == 'TIME_OUT'
-
+#pitcheridle Action Speed
+TIME_PER_ACTION = 1
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 2
+FRAMES_PER_ACTION= FRAMES_PER_ACTION * ACTION_PER_TIME#액션프래임속
 
 
 class Idle:
@@ -47,21 +52,19 @@ class Idle:
 
     @staticmethod
     def do(batter):
-        if batter.timer % 10 == 0:
-            batter.frame = (batter.frame + 1) % 4
-        batter.timer += 1
+        batter.frame = (batter.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
     @staticmethod
     def draw(batter):
-        match batter.frame:
+        match int(batter.frame):
             case 0:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 1:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 2:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 3:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
 
 
 class Run:
