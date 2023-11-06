@@ -37,10 +37,14 @@ TIME_PER_ACTION = 1
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 2
 FRAMES_PER_ACTION= FRAMES_PER_ACTION * ACTION_PER_TIME#액션프래임속
+#pitcheridle Action Speed
+TIME_PER_ACTIONthrow = 1
+ACTION_PER_TIMEthrow = 1.0 / TIME_PER_ACTIONthrow
+FRAMES_PER_ACTIONthrow = 8
+FRAMES_PER_ACTIONthrow= FRAMES_PER_ACTIONthrow * ACTION_PER_TIMEthrow#액션프래임속
 
 
 class Idle:
-
     @staticmethod
     def enter(batter, e):
         batter.frame = 0
@@ -67,40 +71,6 @@ class Idle:
                 batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
 
 
-class Run:
-
-    @staticmethod
-    def enter(batter, e):
-        if right_down(e) or left_up(e): # 오른쪽으로 RUN
-            batter.dir, batter.face_dir, batter.action = 1, 1, 1
-        elif left_down(e) or right_up(e): # 왼쪽으로 RUN
-            batter.dir, batter.face_dir, batter.action = -1, -1, 0
-
-    @staticmethod
-    def exit(boy, e):
-        if space_down(e):
-            boy.fire_ball()
-        pass
-
-    @staticmethod
-    def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 5
-        pass
-
-    @staticmethod
-    def draw(batter):
-        match batter.frame:
-            case 0:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
-            case 1:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
-            case 2:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
-            case 3:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
-
-
 
 class Throw:
     @staticmethod
@@ -115,24 +85,20 @@ class Throw:
 
     @staticmethod
     def do(batter):
-        if batter.timer % 5 == 0:
-            batter.frame +=1
-        batter.timer+=1
-        if batter.frame>= 9:
-            batter.state_machine.handle_event(('TIME_OUT', 0))
+        batter.frame = (batter.frame + FRAMES_PER_ACTIONthrow * ACTION_PER_TIMEthrow * game_framework.frame_time) % 9
     @staticmethod
     def draw(batter):
-        match batter.frame:
+        match int(batter.frame):
             case 0:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 1:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame)* 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 2:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 3:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
             case 4:
-                batter.image.clip_draw(208 + batter.frame * 16, 130, 25, 30, batter.x, batter.y, 50, 80)
+                batter.image.clip_draw(208 +int(batter.frame) * 16, 130, 25, 30, batter.x, batter.y, 50, 80)
             case 5:
                 batter.image.clip_draw(208 + 4 * 16 + 25, 130, 25, 30, batter.x, batter.y, 60, 80)
             case 6:
@@ -141,14 +107,15 @@ class Throw:
                 batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 50, 80)
             case 8:
                 batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 50, 80)
+                batter.state_machine.handle_event(('TIME_OUT', 0))
+
 
 class StateMachine:
     def __init__(self, batter):
         self.batter = batter
         self.cur_state = Idle
         self.transitions = {
-            Idle: {space_down:Throw, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
-            Run: {space_down:Run,right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
+            Idle: {space_down:Throw},
             Throw: {hit_out:Idle}
         }
 

@@ -106,8 +106,7 @@ class Hit:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit * game_framework.frame_time) % 6
-        if int(batter.frame)>= 5:
-            batter.state_machine.handle_event(('TIME_OUT', 0))
+
     @staticmethod
     def draw(batter):
         match int(batter.frame):
@@ -124,6 +123,8 @@ class Hit:
                 batter.image.clip_draw(92, 90, 25, 40, batter.x + 50, batter.y, 200, 250)
             case 5:
                 batter.image.clip_draw(117, 90, 25, 38, batter.x, batter.y, 200, 250)
+                batter.state_machine.handle_event(('TIME_OUT', 0))
+
 
 
 
