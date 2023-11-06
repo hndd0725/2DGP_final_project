@@ -36,7 +36,7 @@ def hit_out(e):
 # time_out = lambda e : e[0] == 'TIME_OUT'
 
 #batterhit Action Speed
-TIME_PER_ACTIONhit = 1
+TIME_PER_ACTIONhit = 0.7
 ACTION_PER_TIMEhit = 1.0 / TIME_PER_ACTIONhit
 FRAMES_PER_ACTIONhit = 6
 FRAMES_PER_ACTIONhit= FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit#액션프래임속
@@ -59,9 +59,6 @@ class Idle:
 
     @staticmethod
     def do(batter):
-        # if batter.timer%10==0:
-        #     batter.frame = (batter.frame + 1) % 2
-        # batter.timer+=1
         batter.frame = (batter.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
 
     @staticmethod
@@ -110,15 +107,15 @@ class Hit:
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit * game_framework.frame_time) % 6
         print(batter.frame)
-        if batter.frame>= 6:
+        if int(batter.frame)>= 5:
             batter.state_machine.handle_event(('TIME_OUT', 0))
     @staticmethod
     def draw(batter):
-        match batter.frame:
+        match int(batter.frame):
             case 0:
-                batter.image.clip_draw(batter.frame * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
+                batter.image.clip_draw(int(batter.frame) * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
             case 1:
-                batter.image.clip_draw(batter.frame * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
+                batter.image.clip_draw(int(batter.frame) * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
             case 2:
                 batter.image.clip_draw(32, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
             case 3:
