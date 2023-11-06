@@ -28,7 +28,6 @@ class Ball:
 
     def update(self):
         global  hit_ok
-        print("hit")
         if self.situation==2:#변화구
                 self.t = self.i / 100
                 self.size += 5 * self.t
