@@ -4,7 +4,7 @@ from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDL
 
 import ball
 import game_world
-from ball import Ball,hit_ok
+from ball import Ball
 
 
 # state event check
@@ -58,7 +58,6 @@ class Idle:
 
 
 class Run:
-
     @staticmethod
     def enter(batter, e):
         if right_down(e) or left_up(e): # 오른쪽으로 RUN

@@ -28,6 +28,7 @@ class Ball:
 
     def update(self):
         global  hit_ok
+        print("hit")
         if self.situation==2:#변화구
                 self.t = self.i / 100
                 self.size += 5 * self.t
@@ -53,7 +54,7 @@ class Ball:
                 self.x = (1 - self.t) * 420 + self.t * self.pticher_ballend_x + self.changeball
                 self.y = (1 - self.t) * 220 + self.t * self.pticher_ballend_y
                 self.i += self.velocity
-                if hit_ok and 43.75<=self.size and self.size<=48.5:
+                if hit_ok and 35.0<=self.size and self.size<=39.25:
                     self.situation = 0
                     self.t = 0
                     self.i = 0
