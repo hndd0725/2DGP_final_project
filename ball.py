@@ -1,8 +1,15 @@
 from pico2d import load_image
 
+import game_framework
 import game_world
 
 hit_ok=False
+
+PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
+RUN_SPEED_KMPH = 10.0 # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 class Ball:
     image = None
 
@@ -28,17 +35,19 @@ class Ball:
 
     def update(self):
         global  hit_ok
+
         if self.situation==2:#변화구
                 self.t = self.i / 100
-                self.size += 5 * self.t
+                self.size = 40 * self.t
                 self.x = (1 - self.t) * 420 + self.t * self.pticher_ballend_x + self.changeball
                 self.y = (1 - self.t) * 220 + self.t *  self.pticher_ballend_y
-                self.i += self.velocity
+                self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time #self.velocity
                 print(self.size)
+                # boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
                 if self.i < 50:
-                    self.changeball += 5
+                    self.changeball += 1.5
                 if self.i >= 50:
-                    self.changeball -= 5
+                    self.changeball -= 1.5
                 if hit_ok and 43.75<=self.size and self.size<=48.5 :
                     self.situation = 0
                     self.t = 0
@@ -49,10 +58,11 @@ class Ball:
                     game_world.remove_object(self)
         if self.situation==1:#직선구
                 self.t = self.i / 100
-                self.size+=5*self.t
+                self.size=40*self.t
                 self.x = (1 - self.t) * 420 + self.t * self.pticher_ballend_x + self.changeball
                 self.y = (1 - self.t) * 220 + self.t * self.pticher_ballend_y
-                self.i += self.velocity
+                self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
+                print(self.size)
                 if hit_ok and 35.0<=self.size and self.size<=39.25:
                     self.situation = 0
                     self.t = 0
