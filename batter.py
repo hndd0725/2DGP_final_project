@@ -118,7 +118,7 @@ class Hit:
                 batter.image.clip_draw(32, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
             case 3:
                 batter.image.clip_draw(62, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
-                ball.hit_ok=True
+                ball.hit_ok = True
             case 4:
                 batter.image.clip_draw(92, 90, 25, 40, batter.x + 50, batter.y, 200, 250)
             case 5:
