@@ -5,6 +5,7 @@ from pico2d import load_image
 import game_framework
 import game_world
 import strikezone
+import topview_mode
 from strikezone import Strikezone
 
 hit_ok=False
@@ -88,6 +89,6 @@ class Ball:
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if (self.t >= 1):
                 game_world.remove_object(self)
+                game_framework.run(topview_mode)
                 hit_ok = False
-        #game_world.remove_object(self)
-        #if self.x<50 or self.x>800-50:
+
