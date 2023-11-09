@@ -1,7 +1,11 @@
+import random
+
 from pico2d import load_image
 
 import game_framework
 import game_world
+import strikezone
+from strikezone import Strikezone
 
 hit_ok=False
 
@@ -27,9 +31,9 @@ class Ball:
             self.size = 30.0
             self.velocity=7
         self.changeball=0
-        self.pticher_ballend_x=430
-        self.pticher_ballend_y=60
-        strikezone.get_bb_strikezone()
+        self.pticher_ballend_x=random.randint(strikezone.left, strikezone.right)#430
+        self.pticher_ballend_y=random.randint(strikezone.bottom, strikezone.top)#100
+
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
@@ -38,7 +42,7 @@ class Ball:
 
         if self.situation==2:#변화구
                 self.t = self.i / 100
-                self.size = 40 * self.t
+                self.size = 30 * self.t
                 self.x = (1 - self.t) * 420 + self.t * self.pticher_ballend_x + self.changeball
                 self.y = (1 - self.t) * 220 + self.t *  self.pticher_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time #self.velocity
@@ -59,7 +63,7 @@ class Ball:
                     game_world.remove_object(self)
         if self.situation==1:#직선구
                 self.t = self.i / 100
-                self.size=40*self.t
+                self.size=30*self.t
                 self.x = (1 - self.t) * 420 + self.t * self.pticher_ballend_x + self.changeball
                 self.y = (1 - self.t) * 220 + self.t * self.pticher_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
