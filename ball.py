@@ -19,12 +19,12 @@ class Ball:
         self.x, self.y, self.velocity = x, y, velocity
         self.t,self.i=0,0
         self.timer=0
-        self.size = 0
+        self.size = 0.0
         self.situation=situation
         if self.situation==1 or 2:
-            self.size=1
+            self.size=1.0
         if self.situation==0:
-            self.size = 30
+            self.size = 30.0
             self.velocity=7
         self.changeball=0
         self.pticher_ballend_x=430
@@ -45,10 +45,11 @@ class Ball:
                 print(self.size)
                 # boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
                 if self.i < 50:
-                    self.changeball += 1.5
+                    self.changeball += 1
                 if self.i >= 50:
-                    self.changeball -= 1.5
-                if hit_ok and 43.75<=self.size and self.size<=48.5 :
+                    self.changeball -= 1
+                if hit_ok and 39.0 <= self.size and self.size < 40.0:
+
                     self.situation = 0
                     self.t = 0
                     self.i = 0
@@ -63,7 +64,8 @@ class Ball:
                 self.y = (1 - self.t) * 220 + self.t * self.pticher_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
                 print(self.size)
-                if hit_ok and 35.0<=self.size and self.size<=39.25:
+                if hit_ok and 39.0<=self.size and self.size<40.0:
+                    print(1)
                     self.situation = 0
                     self.t = 0
                     self.i = 0
