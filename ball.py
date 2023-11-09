@@ -89,6 +89,6 @@ class Ball:
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if (self.t >= 1):
                 game_world.remove_object(self)
-                game_framework.run(topview_mode)
+                game_framework.change_mode(topview_mode)
                 hit_ok = False
 
