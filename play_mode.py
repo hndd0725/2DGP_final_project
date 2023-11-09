@@ -6,6 +6,7 @@ from batter import Batter
 from grass import Grass
 import game_framework
 from pitcher import Pitcher
+from strikezone import Strikezone
 
 
 # Game object class here
@@ -30,7 +31,7 @@ def init():
     global grass
     global batter
     global pitcher
-
+    global strikezone
 
     grass = Grass()
     game_world.add_object(grass, 0)
@@ -39,7 +40,8 @@ def init():
     game_world.add_object(batter, 2)
     pitcher = Pitcher()
     game_world.add_object(pitcher, 2)
-
+    strikezone=Strikezone()
+    game_world.add_object(strikezone, 2)
 def update():
     game_world.update()
     # delay(0.5)

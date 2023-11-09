@@ -176,10 +176,8 @@ class Batter:
 
     def draw(self):
         self.state_machine.draw()
-        draw_rectangle(*self.get_bb_strikezone())
 
-    def get_bb_strikezone(self):
-        return self.x - 20+100, self.y - 35, self.x + 20+100, self.y + 20
+
     def fire_ball(self,sit):
         ball=Ball(self.x,self.y,5,sit)
         game_world.add_object(ball,1)

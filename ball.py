@@ -29,7 +29,7 @@ class Ball:
         self.changeball=0
         self.pticher_ballend_x=430
         self.pticher_ballend_y=60
-
+        strikezone.get_bb_strikezone()
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
