@@ -5,7 +5,7 @@ from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDL
 
 import game_framework
 import game_world
-from ball import Ball
+
 # state event check
 # ( state event type, event value )
 
