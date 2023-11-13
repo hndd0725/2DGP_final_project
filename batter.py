@@ -2,7 +2,7 @@
 from pico2d import *
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
-import ball
+
 import game_framework
 import game_world
 from ball import Ball
@@ -69,27 +69,23 @@ class Idle:
 class Run:
     @staticmethod
     def enter(batter, e):
-        if right_down(e) or left_up(e): # 오른쪽으로 RUN
-            batter.dir, batter.face_dir, batter.action = 1, 1, 1
-        elif left_down(e) or right_up(e): # 왼쪽으로 RUN
-            batter.dir, batter.face_dir, batter.action = -1, -1, 0
-
-    @staticmethod
-    def exit(boy, e):
-        if space_down(e):
-            boy.fire_ball()
+        batter.frame = 0
         pass
 
     @staticmethod
-    def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 5
+    def exit(batter, e):
+
         pass
 
     @staticmethod
-    def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+    def do(batter):
+        batter.frame = (batter.frame + FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit * game_framework.frame_time) % 6
 
+        pass
+
+    @staticmethod
+    def draw(batter):
+        pass
 
 
 class Hit:

@@ -3,9 +3,9 @@ from sdl2 import SDL_QUIT
 
 import game_framework
 import game_world
-import pitcher
+
 import play_mode
-from pitcher import Pitcher
+from ball_topview import Ball
 
 
 def handle_events():
@@ -23,9 +23,9 @@ def handle_events():
 def init():
     global image
     global logo_start_time
-    global pitchar
-    pitcher = Pitcher()
-    game_world.add_object(pitcher, 2)
+    global ball
+    ball=Ball()
+    game_world.add_object(ball, 2)
     logo_start_time=get_time()
     image = load_image('SNES - Human Baseball JPN - Tokyo.png')
     pass
@@ -39,7 +39,7 @@ def update():
     pass
 def draw():
     clear_canvas()
-    image.draw(400,300)
+    image.draw(400,400)
     game_world.render()
     update_canvas()
     pass

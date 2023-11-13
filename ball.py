@@ -6,8 +6,7 @@ import game_framework
 import game_world
 import state_variable
 import strikezone
-# import topview_mode
-from strikezone import Strikezone
+import topview_mode
 
 
 
@@ -35,8 +34,7 @@ class Ball:
         self.changeball=0
         self.throw_ballend_x=random.randint(strikezone.left, strikezone.right)#430
         self.throw_ballend_y=random.randint(strikezone.bottom, strikezone.top)#100
-        self.hit_ballend_x=random.randint(50,550)
-        self.hit_ballend_y =random.randint(400, 700)
+
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
@@ -77,17 +75,17 @@ class Ball:
                     self.t = 0
                     self.i = 0
                 else:
-                    hit_ok=False
+                    state_variable.hit_ok=False
                 if self.t>=1:
                     game_world.remove_object(self)
         if self.situation == 0:  # 타자 칠때
             self.t = self.i / 100
             self.size = 30 * (1-self.t)
-            self.x = (1 - self.t) * ballhit_start_x + self.t *self.hit_ballend_x
-            self.y = (1 - self.t) * ballhit_start_y + self.t * self.hit_ballend_y
+            self.x = (1 - self.t) * ballhit_start_x + self.t *state_variable.hit_ballend_x
+            self.y = (1 - self.t) * ballhit_start_y + self.t *state_variable.hit_ballend_y
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.t >= 1:
                 game_world.remove_object(self)
-                # game_framework.change_mode(topview_mode)
-                hit_ok = False
+                game_framework.change_mode(topview_mode)
+                state_variable.hit_ok = False
 
