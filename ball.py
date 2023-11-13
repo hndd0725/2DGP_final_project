@@ -4,11 +4,12 @@ from pico2d import load_image
 
 import game_framework
 import game_world
+import state_variable
 import strikezone
-import topview_mode
+# import topview_mode
 from strikezone import Strikezone
 
-hit_ok=False
+
 
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 10.0 # Km / Hour
@@ -40,7 +41,7 @@ class Ball:
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
     def update(self):
-        global  hit_ok
+
         global ballhit_start_x,ballhit_start_y
         if self.situation==2:#변화구
                 self.t = self.i / 100
@@ -48,12 +49,11 @@ class Ball:
                 self.x = (1 - self.t) * 420 + self.t * self.throw_ballend_x + self.changeball
                 self.y = (1 - self.t) * 220 + self.t *  self.throw_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time #self.velocity
-                print(self.size,hit_ok)
                 if self.i < 50:
                     self.changeball += 1
                 if self.i >= 50:
                     self.changeball -= 1
-                if hit_ok and 20.0 <= self.size:
+                if state_variable.hit_ok and 20.0 <= self.size:
                     print(1)
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
@@ -61,7 +61,7 @@ class Ball:
                     self.t = 0
                     self.i = 0
                 else:
-                    hit_ok=False
+                    state_variable.hit_ok=False
                 if self.t >= 1:
                     game_world.remove_object(self)
         if self.situation==1:#직선구
@@ -70,8 +70,7 @@ class Ball:
                 self.x = (1 - self.t) * 420 + self.t * self.throw_ballend_x
                 self.y = (1 - self.t) * 220 + self.t * self.throw_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
-                print(self.size,hit_ok)
-                if hit_ok and 15.0<=self.size:
+                if state_variable.hit_ok and 15.0<=self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
@@ -87,8 +86,8 @@ class Ball:
             self.x = (1 - self.t) * ballhit_start_x + self.t *self.hit_ballend_x
             self.y = (1 - self.t) * ballhit_start_y + self.t * self.hit_ballend_y
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
-            if (self.t >= 1):
+            if self.t >= 1:
                 game_world.remove_object(self)
-                game_framework.change_mode(topview_mode)
+                # game_framework.change_mode(topview_mode)
                 hit_ok = False
 

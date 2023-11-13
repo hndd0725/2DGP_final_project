@@ -45,8 +45,6 @@ def init():
 def update():
     game_world.update()
     # delay(0.5)
-
-
 def draw():
     clear_canvas()
     game_world.render()
