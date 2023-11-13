@@ -5,6 +5,7 @@ import game_framework
 import game_world
 
 import play_mode
+from attackplayer_topview import AtkPlayer
 from ball_topview import Ball
 
 
@@ -24,6 +25,9 @@ def init():
     global image
     global logo_start_time
     global ball
+    global atkplayer
+    atkplayer=AtkPlayer()
+    game_world.add_object(atkplayer, 1)
     ball=Ball()
     game_world.add_object(ball, 2)
     logo_start_time=get_time()

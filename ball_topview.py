@@ -5,8 +5,7 @@ from pico2d import load_image
 import game_framework
 import game_world
 import state_variable
-import strikezone
-import topview_mode
+
 
 
 
