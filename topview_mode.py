@@ -7,6 +7,7 @@ import game_world
 import play_mode
 from attackplayer_topview import AtkPlayer
 from ball_topview import Ball
+from pitcher_topview import Pitcher
 
 
 def handle_events():
@@ -26,11 +27,14 @@ def init():
     global logo_start_time
     global ball
     global atkplayer
+    global pitcher
     atkplayer=AtkPlayer()
     game_world.add_object(atkplayer, 1)
+    pitcher = Pitcher()
+    game_world.add_object(pitcher, 2)
     ball=Ball()
     game_world.add_object(ball, 2)
-    logo_start_time=get_time()
+
     image = load_image('SNES - Human Baseball JPN - Tokyo.png')
     pass
 def finish():
@@ -38,8 +42,7 @@ def finish():
     pass
 def update():
     game_world.update()
-    # if get_time()-logo_start_time>=2.0:
-    #     game_framework.change_mode(play_mode)
+
     pass
 def draw():
     clear_canvas()

@@ -5,6 +5,7 @@ from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDL
 
 import game_framework
 import game_world
+import play_mode
 
 import state_variable
 
@@ -18,16 +19,17 @@ def right_down(e):
 
 def click(e):
     return e[0]=='INPUT' and e[1].type==SDL_MOUSEBUTTONDOWN
-def hit_out(e):
+def time_out(e):
     return e[0] == 'TIME_OUT'
+
 # time_out = lambda e : e[0] == 'TIME_OUT'
 
-#batterhit Action Speed
-TIME_PER_ACTIONhit = 0.6
-ACTION_PER_TIMEhit = 1.0 / TIME_PER_ACTIONhit
-FRAMES_PER_ACTIONhit = 6
-FRAMES_PER_ACTIONhit= FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit#액션프래임속
 #batteridle Action Speed
+TIME_PER_ACTIONidle = 1
+ACTION_PER_TIMEidle = 1.0 / TIME_PER_ACTIONidle
+FRAMES_PER_ACTIONidle = 2
+FRAMES_PER_ACTIONidle= FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle#액션프래임속
+#batterrun Action Speed
 TIME_PER_ACTIONrun = 0.5
 ACTION_PER_TIMErun = 1.0 / TIME_PER_ACTIONrun
 FRAMES_PER_ACTIONrun = 3
@@ -43,7 +45,9 @@ class Idle:
 
     @staticmethod
     def enter(batter, e):
+        global logo_start_time
         batter.frame = 0
+        logo_start_time = get_time()
         pass
 
     @staticmethod
@@ -52,13 +56,16 @@ class Idle:
 
     @staticmethod
     def do(batter):
-        batter.frame = (batter.frame + FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun * game_framework.frame_time) % 1
-
+        batter.frame = (batter.frame + FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle * game_framework.frame_time) % 2
+        if get_time() - logo_start_time >= 2.0:
+            game_framework.change_mode(play_mode)
     @staticmethod
     def draw(batter):
-        # batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 100, 150)
-        # batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 100, 150)
-        #batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 50, 60)
+        match int(batter.frame):
+            case 0:
+                batter.image.clip_composite_draw(0, 20, 15, 20,0,'h', batter.x, batter.y, 20, 30)
+            case 1:
+                batter.image.clip_composite_draw(35, 20, 15, 25, 0, 'h', batter.x, batter.y, 20, 30)
         pass
 
 
@@ -70,7 +77,6 @@ class Run:
 
     @staticmethod
     def exit(batter, e):
-
         pass
 
     @staticmethod
@@ -94,7 +100,7 @@ class StateMachine:
         self.cur_state = Run
         self.transitions = {
             Idle: {right_down: Run},
-            Run: {}
+            Run: {time_out:Idle}
 
         }
 
@@ -119,7 +125,7 @@ class StateMachine:
 
 class AtkPlayer:
     def __init__(self):
-        self.x, self.y = 400, -30#오른쪽 베이스490,60
+        self.x, self.y = 400, -30#오른쪽 베이스490,50
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
@@ -131,19 +137,18 @@ class AtkPlayer:
         self.i=0
         self.t=0
         self.situation=0
+
     def update(self):
         self.state_machine.update()
         if self.situation == 0:
             global ballhit_start_x, ballhit_start_y
             self.t = self.i / 100
-            if self.i<50:
-                self.size = 60 * self.t+10
-            else:
-                self.size = 60 * (1-self.t)+10
             self.x = (1 - self.t) * 400 + self.t * 490
-            self.y = (1 - self.t) * -30 + self.t * 60
+            self.y = (1 - self.t) * -30 + self.t * 50
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.t >= 1:
+                self.state_machine.handle_event(('TIME_OUT', 0))
+
                 self.situation=-1
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
