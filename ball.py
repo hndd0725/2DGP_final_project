@@ -34,7 +34,8 @@ class Ball:
         self.changeball=0
         self.throw_ballend_x=random.randint(strikezone.left, strikezone.right)#430
         self.throw_ballend_y=random.randint(strikezone.bottom, strikezone.top)#100
-
+        state_variable.hit_ballend_x=random.randint(80, 550)
+        state_variable.hit_ballend_y=random.randint(400, 900)
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
@@ -51,8 +52,8 @@ class Ball:
                     self.changeball += 1
                 if self.i >= 50:
                     self.changeball -= 1
-                if state_variable.hit_ok and 20.0 <= self.size:
-                    print(1)
+                if state_variable.hit_ok and 24.0 <= self.size:
+
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
@@ -68,6 +69,7 @@ class Ball:
                 self.x = (1 - self.t) * 420 + self.t * self.throw_ballend_x
                 self.y = (1 - self.t) * 220 + self.t * self.throw_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
+                print(self.size)
                 if state_variable.hit_ok and 15.0<=self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
