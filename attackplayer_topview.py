@@ -125,7 +125,7 @@ class StateMachine:
 
 class AtkPlayer:
     def __init__(self):
-        self.x, self.y = 400, -30#오른쪽 베이스490,50
+        self.x, self.y = state_variable.stkplayerStart_x, state_variable.stkplayerStart_y#오른쪽 베이스490,50
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
@@ -143,12 +143,29 @@ class AtkPlayer:
         if self.situation == 0:
             global ballhit_start_x, ballhit_start_y
             self.t = self.i / 100
-            self.x = (1 - self.t) * 400 + self.t * 490
-            self.y = (1 - self.t) * -30 + self.t * 50
+            self.x = (1 - self.t) * state_variable.stkplayerStart_x + self.t * state_variable.stkplayerEnd_x
+            self.y = (1 - self.t) * state_variable.stkplayerStart_y + self.t * state_variable.stkplayerEnd_y
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.t >= 1:
                 self.state_machine.handle_event(('TIME_OUT', 0))
-
+                if state_variable.stkplayerBase_num==0:
+                    state_variable.stkplayerStart_x=490
+                    state_variable.stkplayerStart_y =50
+                    state_variable.stkplayerEnd_x = 400
+                    state_variable.stkplayerEnd_y = 150
+                    state_variable.stkplayerBase_num+=1
+                elif state_variable.stkplayerBase_num==1:
+                    state_variable.stkplayerStart_x = 400
+                    state_variable.stkplayerStart_y = 150
+                    state_variable.stkplayerEnd_x = 310
+                    state_variable.stkplayerEnd_y = 50
+                    state_variable.stkplayerBase_num += 1
+                elif state_variable.stkplayerBase_num == 2:
+                    state_variable.stkplayerStart_x = 310
+                    state_variable.stkplayerStart_y = 50
+                    state_variable.stkplayerEnd_x = 400
+                    state_variable.stkplayerEnd_y = -30
+                    state_variable.stkplayerBase_num += 1
                 self.situation=-1
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))

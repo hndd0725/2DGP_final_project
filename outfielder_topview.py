@@ -1,181 +1,152 @@
-# 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import *
-from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
-
+import random
+import math
 import game_framework
 import game_world
-from ball import Ball
-import state_variable
-
-# state event check
-# ( state event type, event value )
-
-def right_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
+from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+import topview_mode
 
 
-def right_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
+# zombie Run Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 10.0  # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-
-def left_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
-
-
-def left_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
-
-def space_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
-
-def click(e):
-    return e[0]=='INPUT' and e[1].type==SDL_MOUSEBUTTONDOWN
-def hit_out(e):
-    return e[0] == 'TIME_OUT'
-# time_out = lambda e : e[0] == 'TIME_OUT'
-
-#batterhit Action Speed
-TIME_PER_ACTIONhit = 0.6
-ACTION_PER_TIMEhit = 1.0 / TIME_PER_ACTIONhit
-FRAMES_PER_ACTIONhit = 6
-FRAMES_PER_ACTIONhit= FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit#액션프래임속
-#batteridle Action Speed
-TIME_PER_ACTION = 1
+# zombie Action Speed
+TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 2
-FRAMES_PER_ACTION= FRAMES_PER_ACTION * ACTION_PER_TIME#액션프래임속
+FRAMES_PER_ACTION = 10.0
 
-class Idle:
+animation_names = ['Walk', 'Idle']
 
-    @staticmethod
-    def enter(batter, e):
-        batter.frame = 0
-        pass
-
-    @staticmethod
-    def exit(batter, e):
-        pass
-
-    @staticmethod
-    def do(batter):
-        batter.frame = (batter.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
-
-    @staticmethod
-    def draw(batter):
-        batter.image.clip_draw(int(batter.frame) * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
-
-
-class Run:
-    @staticmethod
-    def enter(batter, e):
-        batter.frame = 0
-        pass
-
-    @staticmethod
-    def exit(batter, e):
-
-        pass
-
-    @staticmethod
-    def do(batter):
-        batter.frame = (batter.frame + FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit * game_framework.frame_time) % 6
-
-        pass
-
-    @staticmethod
-    def draw(batter):
-        pass
-
-
-class Throw:
-    @staticmethod
-    def enter(batter, e):
-        batter.frame = 0 # pico2d import 필요
-
-        pass
-
-    @staticmethod
-    def exit(batter, e):
-        pass
-
-    @staticmethod
-    def do(batter):
-        batter.frame = (batter.frame + FRAMES_PER_ACTIONhit * ACTION_PER_TIMEhit * game_framework.frame_time) % 6
-
-    @staticmethod
-    def draw(batter):
-        match int(batter.frame):
-            case 0:
-                batter.image.clip_draw(int(batter.frame) * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
-            case 1:
-                batter.image.clip_draw(int(batter.frame) * 16, 90, 16, 40, batter.x, batter.y, 100, 250)
-            case 2:
-                batter.image.clip_draw(32, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
-            case 3:
-                batter.image.clip_draw(62, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
-                state_variable.hit_ok = True
-            case 4:
-                batter.image.clip_draw(92, 90, 25, 40, batter.x + 50, batter.y, 200, 250)
-            case 5:
-                batter.image.clip_draw(117, 90, 25, 38, batter.x, batter.y, 200, 250)
-                batter.state_machine.handle_event(('TIME_OUT', 0))
-
-
-
-
-class StateMachine:
-    def __init__(self, batter):
-        self.batter = batter
-        self.cur_state = Idle
-        self.transitions = {
-            Idle: {click:Throw, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
-            Run: {space_down:Run,right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
-            Throw: {hit_out:Idle}
-        }
-
-    def start(self):
-        self.cur_state.enter(self.batter, ('NONE', 0))
-
-    def update(self):
-        self.cur_state.do(self.batter)
-
-    def handle_event(self, e):
-        for check_event, next_state in self.transitions[self.cur_state].items():
-            if check_event(e):
-                self.cur_state.exit(self.batter, e)
-                self.cur_state = next_state
-                self.cur_state.enter(self.batter, e)
-                return True
-
-        return False
-
-    def draw(self):
-        self.cur_state.draw(self.batter)
 
 class Outfielder:
-    def __init__(self):
-        self.x, self.y = 320, 120
-        self.frame = 0
-        self.action = 3#오른쪽idle
-        self.dir = 0
-        self.face_dir = 1#오른쪽 방향으로 얼굴을 향하고.
-        self.image = load_image('Baseballplayers.png')
-        self.state_machine = StateMachine(self)
-        self.state_machine.start()
-        self.timer=0
-    def update(self):
-        self.state_machine.update()
+    images = None
 
-    def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
+    def load_images(self):
+        if Outfielder.images == None:
+            # Outfielder.images = {}
+            # for name in animation_names:
+            #     Outfielder.images[name] = [load_image("./zombie/" + name + " (%d)" % i + ".png") for i in range(1, 11)]
+            # Outfielder.font = load_font('ENCR10B.TTF', 40)
+            pass
+
+    def __init__(self, x=None, y=None):
+        self.x = x if x else random.randint(100, 1180)
+        self.y = y if y else random.randint(100, 924)
+        self.load_images()
+        self.dir = 0.0      # radian 값으로 방향을 표시
+        self.speed = 0.0
+        self.frame = random.randint(0, 9)
+        self.state = 'Idle'
+        self.ball_count = 0
+        self.image = load_image('Baseballplayers.png')
+        self.tx,self.ty=1000,1000
+        self.build_behavior_tree()
+
+        self.patrol_locations = [(43, 274), (1118, 274), (1050, 494), (575, 804), (235, 991), (575, 804), (1050, 494),
+                                 (1118, 274)]
+        self.loc_no = 0
+
+
+    def get_bb(self):
+        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+
+
+    def update(self):
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        # fill here
+        self.bt.run()
 
     def draw(self):
-        self.state_machine.draw()
+        if math.cos(self.dir) < 0:
+            Outfielder.images[self.state][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 100, 100)
+        else:
+            Outfielder.images[self.state][int(self.frame)].draw(self.x, self.y, 100, 100)
+        self.font.draw(self.x - 10, self.y + 60, f'{self.ball_count}', (0, 0, 255))
+        draw_rectangle(*self.get_bb())
+
+    def handle_event(self, event):
+        pass
+
+    def handle_collision(self, group, other):
+        if group == 'zombie:ball':
+            self.ball_count += 1
+
+    def set_target_location(self, x=None, y=None):
+        if not x or not y:
+            raise ValueError('Location should be given')
+        self.tx, self.ty = x, y
+        return BehaviorTree.SUCCESS
+
+    def distance_less_than(self, x1, y1, x2, y2, r):
+        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+        return distance2 < (PIXEL_PER_METER * r) ** 2
+
+    def move_slightly_to(self, tx, ty):
+        self.dir = math.atan2(ty - self.y, tx - self.x)
+        self.speed = RUN_SPEED_PPS
+        self.x += self.speed * math.cos(self.dir) * game_framework.frame_time
+        self.y += self.speed * math.sin(self.dir) * game_framework.frame_time
+
+    def move_to(self, r=0.5):
+        self.state = 'Walk'
+        self.move_slightly_to(self.tx, self.ty)
+        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
 
-    def fire_ball(self,sit):
-        ball=Ball(self.x,self.y,5,sit)
-        game_world.add_object(ball,1)
+    def set_random_location(self):
+        self.tx, self.ty = random.randint(100, 1280 - 100), random.randint(100, 1024 - 100)
+        return BehaviorTree.SUCCESS
+
+    def is_boy_nearby(self, r):
+        if self.distance_less_than(topview_mode.AtkPlayer.x, topview_mode.AtkPlayer.y, self.x, self.y, r) :
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def move_to_boy(self, r=0.5):
+        self.state = 'Walk'
+        self.move_slightly_to(topview_mode.AtkPlayer.x, topview_mode.AtkPlayer.y)
+        if self.distance_less_than(topview_mode.AtkPlayer.x, topview_mode.AtkPlayer.y, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def escape_to_boy(self, r=0.5):
+        self.state = 'Walk'
+        self.move_slightly_to(2*self.topview_mode.AtkPlayer.x,2*self.y-topview_mode.AtkPlayer.y)
+        if self.distance_less_than(topview_mode.AtkPlayer.x, topview_mode.AtkPlayer.y, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
 
+    def get_patrol_location(self):
+        self.tx, self.ty = self.patrol_locations[self.loc_no]
+        self.loc_no = (self.loc_no + 1) % len(self.patrol_locations)
+        return BehaviorTree.SUCCESS
+
+
+    def build_behavior_tree(self):
+        a1 = Action('Set target location', self.set_target_location, 500, 50)
+        a2 = Action('Move to', self.move_to)
+        SEQ_move_to_target_location = Sequence('Move to target location', a1, a2)
+        a3 = Action('Set random location', self.set_random_location)
+        root = SEQ_wander = Sequence('Wander', a3, a2)
+        #c1 = Condition('소년이 근처에 있는가?', self.is_boy_nearby, 7)
+        # c2 = Condition('소년이 근처에 있는가?', self.is_boy_nearby2, 7)
+        a4 = Action('소년한테 접근', self.move_to_boy)
+        a5 = Action('소년한테 도망', self.escape_to_boy)
+        # SEQ_chase_boy = Sequence('소년을 추적', c1, a4)
+        # SEQ_chase_boy2 = Sequence('소년 도망', c2, a5)
+        # root = SEL_chase_or_flee = Selector('추적 또는 배회', SEQ_chase_boy,SEQ_chase_boy2, SEQ_wander)
+        # a5 = Action('순찰 위치 가져오기', self.get_patrol_location)
+        #root = SEQ_patrol = Sequence('순찰', c1, a2)
+        self.bt = BehaviorTree(root)
