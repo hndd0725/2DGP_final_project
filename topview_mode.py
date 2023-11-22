@@ -5,6 +5,7 @@ import game_framework
 import game_world
 
 import play_mode
+import state_variable
 from attackplayer_topview import AtkPlayer
 from ball_topview import Ball
 #from outfielder_topview import Outfielder
@@ -35,8 +36,13 @@ def init():
     global atkplayer
     global pitcher
     global outfielder
-    atkplayer=AtkPlayer()
-    game_world.add_object(atkplayer, 1)
+    atkplayers = [AtkPlayer() for _ in range(state_variable.atkplayers_num)]
+    for atkplayer in atkplayers:
+        game_world.add_object(atkplayer, 1)
+        # game_world.add_collision_pair('boy:ball', None, ball)
+        # game_world.add_collision_pair('zombie:ball', None, ball)
+    # atkplayer=AtkPlayer()
+    # game_world.add_object(atkplayer, 1)
     pitcher = Pitcher()
     game_world.add_object(pitcher, 2)
     ball=Ball()

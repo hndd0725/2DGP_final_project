@@ -59,6 +59,7 @@ class Ball:
                     self.situation = 0
                     self.t = 0
                     self.i = 0
+                    state_variable.atkplayers_num+=1
                 else:
                     state_variable.hit_ok=False
                 if self.t >= 1:
@@ -76,6 +77,7 @@ class Ball:
                     self.situation = 0
                     self.t = 0
                     self.i = 0
+                    state_variable.atkplayers_num += 1
                 else:
                     state_variable.hit_ok=False
                 if self.t>=1:

@@ -88,11 +88,20 @@ class Run:
     def draw(batter):
         match int(batter.frame):
             case 0:
-                batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 20, 30)
+                if state_variable.atkplayerBase_num==0 or state_variable.atkplayerBase_num==3:
+                    batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 20, 30)
+                else:
+                    batter.image.clip_composite_draw(14, 0, 20, 20, 0, 'h', batter.x, batter.y, 20,30)
             case 1:
-                batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 20, 30)
+                if state_variable.atkplayerBase_num == 0 or state_variable.atkplayerBase_num == 3:
+                    batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 20, 30)
+                else:
+                    batter.image.clip_composite_draw(34, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
             case 2:
-                batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 20, 30)
+                if state_variable.atkplayerBase_num == 0 or state_variable.atkplayerBase_num == 3:
+                    batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 20, 30)
+                else:
+                    batter.image.clip_composite_draw(51, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
 
 class StateMachine:
     def __init__(self, batter):
@@ -125,7 +134,7 @@ class StateMachine:
 
 class AtkPlayer:
     def __init__(self):
-        self.x, self.y = state_variable.stkplayerStart_x, state_variable.stkplayerStart_y#오른쪽 베이스490,50
+        self.x, self.y = state_variable.atkplayerStart_x, state_variable.atkplayerStart_y#오른쪽 베이스490,50
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
@@ -143,29 +152,32 @@ class AtkPlayer:
         if self.situation == 0:
             global ballhit_start_x, ballhit_start_y
             self.t = self.i / 100
-            self.x = (1 - self.t) * state_variable.stkplayerStart_x + self.t * state_variable.stkplayerEnd_x
-            self.y = (1 - self.t) * state_variable.stkplayerStart_y + self.t * state_variable.stkplayerEnd_y
+            self.x = (1 - self.t) * state_variable.atkplayerStart_x + self.t * state_variable.atkplayerEnd_x
+            self.y = (1 - self.t) * state_variable.atkplayerStart_y + self.t * state_variable.atkplayerEnd_y
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.t >= 1:
+                if state_variable.atkplayerBase_num==3:
+
+                    pass
                 self.state_machine.handle_event(('TIME_OUT', 0))
-                if state_variable.stkplayerBase_num==0:
-                    state_variable.stkplayerStart_x=490
-                    state_variable.stkplayerStart_y =50
-                    state_variable.stkplayerEnd_x = 400
-                    state_variable.stkplayerEnd_y = 150
-                    state_variable.stkplayerBase_num+=1
-                elif state_variable.stkplayerBase_num==1:
-                    state_variable.stkplayerStart_x = 400
-                    state_variable.stkplayerStart_y = 150
-                    state_variable.stkplayerEnd_x = 310
-                    state_variable.stkplayerEnd_y = 50
-                    state_variable.stkplayerBase_num += 1
-                elif state_variable.stkplayerBase_num == 2:
-                    state_variable.stkplayerStart_x = 310
-                    state_variable.stkplayerStart_y = 50
-                    state_variable.stkplayerEnd_x = 400
-                    state_variable.stkplayerEnd_y = -30
-                    state_variable.stkplayerBase_num += 1
+                if state_variable.atkplayerBase_num==0:
+                    state_variable.atkplayerStart_x=490
+                    state_variable.atkplayerStart_y =50
+                    state_variable.atkplayerEnd_x = 400
+                    state_variable.atkplayerEnd_y = 150
+                    state_variable.atkplayerBase_num+=1
+                elif state_variable.atkplayerBase_num==1:
+                    state_variable.atkplayerStart_x = 400
+                    state_variable.atkplayerStart_y = 150
+                    state_variable.atkplayerEnd_x = 310
+                    state_variable.atkplayerEnd_y = 50
+                    state_variable.atkplayerBase_num += 1
+                elif state_variable.atkplayerBase_num == 2:
+                    state_variable.atkplayerStart_x = 310
+                    state_variable.atkplayerStart_y = 50
+                    state_variable.atkplayerEnd_x = 400
+                    state_variable.atkplayerEnd_y = -30
+                    state_variable.atkplayerBase_num += 1
                 self.situation=-1
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
