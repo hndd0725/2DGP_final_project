@@ -25,24 +25,22 @@ def handle_events():
             # pitcher.handle_event(event)
             pass
 
-
-
-
-
 def init():
     global image
     global logo_start_time
     global ball
     global atkplayer
+    global atkplayer2
     global pitcher
     global outfielder
-    atkplayers = [AtkPlayer() for _ in range(state_variable.atkplayers_num)]
-    for atkplayer in atkplayers:
-        game_world.add_object(atkplayer, 1)
-        # game_world.add_collision_pair('boy:ball', None, ball)
-        # game_world.add_collision_pair('zombie:ball', None, ball)
-    # atkplayer=AtkPlayer()
-    # game_world.add_object(atkplayer, 1)
+    # atkplayers = [AtkPlayer() for _ in range(state_variable.atkplayers_num)]
+    # for atkplayer in atkplayers:
+    #     game_world.add_object(atkplayer, 1)
+    #     # game_world.add_collision_pair('boy:ball', None, ball)
+    #     # game_world.add_collision_pair('zombie:ball', None, ball)
+    atkplayer=AtkPlayer(0)
+    game_world.add_object(atkplayer, 1)
+
     pitcher = Pitcher()
     game_world.add_object(pitcher, 2)
     ball=Ball()

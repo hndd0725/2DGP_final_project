@@ -7,3 +7,5 @@ atkplayerStart_x,atkplayerStart_y= 400, -30#홈400-30
 atkplayerEnd_x,atkplayerEnd_y= 490, 50#1루490,50
 atkplayerBase_num=0
 atkplayers_num=0
+atk_loc = [0,0,0]#[0 for _ in range(1000)]
+atk_live=[True for _ in range(1000)]
