@@ -87,17 +87,17 @@ class Run:
     def draw(batter):
         match int(batter.frame):
             case 0:
-                if state_variable.atkplayerBase_num==0 or state_variable.atkplayerBase_num==3:
+                if state_variable.atk_loc[0]==0 or state_variable.atk_loc[0]==3:
                     batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(14, 0, 20, 20, 0, 'h', batter.x, batter.y, 20,30)
             case 1:
-                if state_variable.atkplayerBase_num == 0 or state_variable.atkplayerBase_num == 3:
+                if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
                     batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(34, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
             case 2:
-                if state_variable.atkplayerBase_num == 0 or state_variable.atkplayerBase_num == 3:
+                if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
                     batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(51, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
