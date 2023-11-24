@@ -38,7 +38,6 @@ RUN_SPEED_KMPH = 10.0 # Km / Hour 원래 1
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-
 class Idle:
 
     @staticmethod
@@ -46,7 +45,6 @@ class Idle:
         global logo_start_time
         batter.frame = 0
         logo_start_time = get_time()
-        state_variable.atk_loc[0] += 1
         pass
 
     @staticmethod
@@ -110,6 +108,7 @@ class StateMachine:
             Idle: {right_down: Run},
             Run: {time_out:Idle}
 
+
         }
 
     def start(self):
@@ -134,12 +133,11 @@ class StateMachine:
 class AtkPlayer:
     def __init__(self,num):
         self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30)]
-        self.x, self.y = self.patrol_locations[state_variable.atk_loc[num]]#오른쪽 베이스490,50
-        self.indnum=num
+        self.x, self.y = self.patrol_locations[int(state_variable.atk_loc[num])]#오른쪽 베이스490,50
+        self.indexnum=num
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
-        self.face_dir = 1#오른쪽 방향으로 얼굴을 향하고.
         self.image = load_image('Baseballplayers.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
@@ -165,18 +163,24 @@ class AtkPlayer:
         self.x += self.speed * math.cos(self.dir) * game_framework.frame_time
         self.y += self.speed * math.sin(self.dir) * game_framework.frame_time
     def move_to(self, r=0.1):
-        self.state = 'Walk'
+        self.state = 'W'
         self.move_slightly_to(self.tx, self.ty)
         if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
     def stop(self):
-        self.state = 'Idel'
-        self.state_machine.handle_event(('TIME_OUT', 0))
+        if self.state=='W':
+            if self.indexnum==0:
+                state_variable.atk_loc[self.indexnum] += 0.5
+            else:
+                state_variable.atk_loc[self.indexnum] += 1
+            print( state_variable.atk_loc[self.indexnum],self.indexnum)
+            self.state = 'k'
+            self.state_machine.handle_event(('TIME_OUT', 0))
         return BehaviorTree.RUNNING
     def get_patrol_location(self):
-        self.tx, self.ty = self.patrol_locations[state_variable.atk_loc[self.indnum]+1]
+        self.tx, self.ty = self.patrol_locations[int(state_variable.atk_loc[self.indexnum]+1)]
         return BehaviorTree.SUCCESS
     def is_home_finish(self):
         if self.loc_no<=4:
@@ -190,7 +194,7 @@ class AtkPlayer:
         a3=Action('멈춤',self.stop)
         c1=Condition('홈까지 도착?',self.is_home_finish)
         SEQ_patrol = Sequence('달리기', a1, a2)
-        SEQ_homrun = Sequence('모든베이스달리기', c1,a1, a2)
+        #SEQ_homrun = Sequence('모든베이스달리기', c1,a1, a2)
         root = SEQ_go_stop = Sequence('달리기하며 도착시 멈춤', SEQ_patrol, a3)
         #root = SEQ_homrun
         self.bt = BehaviorTree(root)

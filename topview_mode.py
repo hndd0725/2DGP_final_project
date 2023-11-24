@@ -29,13 +29,12 @@ def init():
     global image
     global logo_start_time
     global ball
-    global atkplayer
-    global atkplayer2
+    global atkplayers
     global pitcher
     global outfielder
-    # atkplayers = [AtkPlayer() for _ in range(state_variable.atkplayers_num)]
-    # for atkplayer in atkplayers:
-    #     game_world.add_object(atkplayer, 1)
+    atkplayers = [AtkPlayer(i) for i in range(0,4)]
+    for i in range(0,state_variable.atkplayers_num):
+        game_world.add_object(atkplayers[i], 1)
     #     # game_world.add_collision_pair('boy:ball', None, ball)
     #     # game_world.add_collision_pair('zombie:ball', None, ball)
     atkplayer=AtkPlayer(0)
