@@ -183,21 +183,34 @@ class AtkPlayer:
     def get_patrol_location(self):
         self.tx, self.ty = self.patrol_locations[int(state_variable.atk_loc[self.indexnum]+1)]
         return BehaviorTree.SUCCESS
+
+    def get_patrol_location_home(self):
+        if state_variable.atk_loc[self.indexnum] <= 4:
+            self.tx, self.ty = self.patrol_locations[int(state_variable.atk_loc[self.indexnum]+1)]
+            if self.indexnum == 0:
+                state_variable.atk_loc[self.indexnum] += 0.5
+            else:
+                state_variable.atk_loc[self.indexnum] += 1
+        return BehaviorTree.SUCCESS
     def is_home_finish(self):
-        if self.loc_no<=4:
+        print(state_variable.atk_loc[state_variable.atkplayers_num-1])
+        if state_variable.atk_loc[self.indexnum]<=4:
+            print('s')
             return BehaviorTree.SUCCESS
         else:
-            self.state_machine.handle_event(('TIME_OUT', 0))
+            if state_variable.atk_loc[state_variable.atkplayers_num-1]>=4.5:
+                self.state_machine.handle_event(('TIME_OUT', 0))
             return  BehaviorTree.FAIL
     def build_behavior_tree(self):
         a2 = Action('Move to', self.move_to)
         a1=Action('달리기위치 가져오기',self.get_patrol_location)
         a3=Action('멈춤',self.stop)
+        a4=Action('달리기위치 홈까지 가져오기',self.get_patrol_location_home)
         c1=Condition('홈까지 도착?',self.is_home_finish)
         SEQ_patrol = Sequence('달리기', a1, a2)
-        #SEQ_homrun = Sequence('모든베이스달리기', c1,a1, a2)
+        SEQ_homrun = Sequence('모든베이스달리기', c1,a4, a2)
         root = SEQ_go_stop = Sequence('달리기하며 도착시 멈춤', SEQ_patrol, a3)
-        #root = SEQ_homrun
+        root = SEQ_homrun
         self.bt = BehaviorTree(root)
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))

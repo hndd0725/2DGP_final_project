@@ -17,10 +17,6 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             game_framework.quit()
-        # elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-        #     game_framework.change_mode(title_mode)
-        # elif event.type == SDL_KEYDOWN and event.key == SDLK_i:
-        #     game_framework.push_mode(item_mode)#finish호출안됌
         else:
             # pitcher.handle_event(event)
             pass
@@ -32,7 +28,7 @@ def init():
     global atkplayers
     global pitcher
     global outfielder
-    atkplayers = [AtkPlayer(i) for i in range(0,50)]
+    atkplayers = [AtkPlayer(i) for i in range(0,100)]
     for i in range(0,state_variable.atkplayers_num):
         game_world.add_object(atkplayers[i], 1)
     #     # game_world.add_collision_pair('boy:ball', None, ball)
