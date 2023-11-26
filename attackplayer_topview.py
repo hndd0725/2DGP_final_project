@@ -170,12 +170,13 @@ class AtkPlayer:
         else:
             return BehaviorTree.RUNNING
     def stop(self):
-        if self.state=='W':
-            if self.indexnum==0:
-                state_variable.atk_loc[self.indexnum] += 0.5
-            else:
-                state_variable.atk_loc[self.indexnum] += 1
-            print( state_variable.atk_loc[self.indexnum],self.indexnum)
+        if state_variable.atk_loc[self.indexnum]<4:
+            if self.state=='W':
+                if self.indexnum==0:
+                    state_variable.atk_loc[self.indexnum] += 0.5
+                else:
+                    state_variable.atk_loc[self.indexnum] += 1
+                    print( state_variable.atk_loc[self.indexnum],self.indexnum)
             self.state = 'k'
             self.state_machine.handle_event(('TIME_OUT', 0))
         return BehaviorTree.RUNNING

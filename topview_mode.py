@@ -32,7 +32,7 @@ def init():
     global atkplayers
     global pitcher
     global outfielder
-    atkplayers = [AtkPlayer(i) for i in range(0,4)]
+    atkplayers = [AtkPlayer(i) for i in range(0,50)]
     for i in range(0,state_variable.atkplayers_num):
         game_world.add_object(atkplayers[i], 1)
     #     # game_world.add_collision_pair('boy:ball', None, ball)
