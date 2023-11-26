@@ -2,6 +2,7 @@ import random
 
 from pico2d import load_image
 
+import ballzone
 import game_framework
 import game_world
 import state_variable
@@ -32,10 +33,11 @@ class Ball:
             self.size = 30.0
             self.velocity=7
         self.changeball=0
-        self.throw_ballend_x=random.randint(strikezone.left, strikezone.right)#430
-        self.throw_ballend_y=random.randint(strikezone.bottom, strikezone.top)#100
+        self.throw_ballend_x=random.randint(ballzone.left, ballzone.right)#430
+        self.throw_ballend_y=random.randint(ballzone.bottom, ballzone.top)#100
         state_variable.hit_ballend_x=random.randint(80, 550)
         state_variable.hit_ballend_y=random.randint(400, 900)
+        self.one_swing=0
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
@@ -52,18 +54,26 @@ class Ball:
                     self.changeball += 1
                 if self.i >= 50:
                     self.changeball -= 1
-                if state_variable.hit_ok and 24.0 <= self.size:
-
+                if state_variable.swing and 24.0 <= self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
                     self.t = 0
                     self.i = 0
+                    state_variable.strike_num = 0
+                    state_variable.ball_num = 0
                     state_variable.atkplayers_num+=1
-
-                else:
-                    state_variable.hit_ok=False
+                elif state_variable.swing and 24.0 > self.size:
+                    if self.one_swing==0:
+                        state_variable.strike_num+=1
+                        self.one_swing=-1
+                    state_variable.swing=False
                 if self.t >= 1:
+                    if state_variable.swing == False:
+                        if strikezone.left <= self.throw_ballend_x <= strikezone.right and strikezone.bottom <= self.throw_ballend_y <= strikezone.top:
+                            state_variable.strike_num += 1
+                        else:
+                            state_variable.ball_num += 1
                     game_world.remove_object(self)
         if self.situation==1:#직선구
                 self.t = self.i / 100
@@ -71,16 +81,26 @@ class Ball:
                 self.x = (1 - self.t) * 420 + self.t * self.throw_ballend_x
                 self.y = (1 - self.t) * 220 + self.t * self.throw_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
-                if state_variable.hit_ok and 15.0<=self.size:
+                if state_variable.swing and 15.0<=self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
                     self.t = 0
                     self.i = 0
+                    state_variable.strike_num=0
+                    state_variable.ball_num = 0
                     state_variable.atkplayers_num += 1
-                else:
-                    state_variable.hit_ok=False
+                elif state_variable.swing and 24.0 > self.size:
+                    if self.one_swing == 0:
+                        state_variable.strike_num += 1
+                        self.one_swing = -1
+                    state_variable.swing = False
                 if self.t>=1:
+                    if state_variable.swing==False:
+                        if strikezone.left<=self.throw_ballend_x <=strikezone.right and strikezone.bottom<=self.throw_ballend_y<=strikezone.top:
+                            state_variable.strike_num += 1
+                        else:
+                            state_variable.ball_num += 1
                     game_world.remove_object(self)
         if self.situation == 0:  # 타자 칠때
             self.t = self.i / 100
@@ -91,5 +111,5 @@ class Ball:
             if self.t >= 1:
                 game_world.remove_object(self)
                 game_framework.change_mode(topview_mode)
-                state_variable.hit_ok = False
+                state_variable.swing = False
 

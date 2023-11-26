@@ -8,6 +8,7 @@ import play_mode
 import state_variable
 from attackplayer_topview import AtkPlayer
 from ball_topview import Ball
+from outfielder_topview import Outfielder
 #from outfielder_topview import Outfielder
 from pitcher_topview import Pitcher
 
@@ -34,12 +35,14 @@ def init():
     #     # game_world.add_collision_pair('boy:ball', None, ball)
     #     # game_world.add_collision_pair('zombie:ball', None, ball)
     atkplayer=AtkPlayer(0)
-    game_world.add_object(atkplayer, 1)
+    game_world.add_object(atkplayer, 2)
 
+    outfielder=Outfielder()
+    game_world.add_object(outfielder, 2)
     pitcher = Pitcher()
-    game_world.add_object(pitcher, 2)
+    game_world.add_object(pitcher, 0)
     ball=Ball()
-    game_world.add_object(ball, 2)
+    game_world.add_object(ball, 1)
     # outfielder=Outfielder()
     # game_world.add_object(outfielder, 2)
 

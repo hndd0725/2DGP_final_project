@@ -42,9 +42,7 @@ class Idle:
 
     @staticmethod
     def enter(batter, e):
-        global logo_start_time
         batter.frame = 0
-        logo_start_time = get_time()
         pass
 
     @staticmethod
@@ -54,8 +52,8 @@ class Idle:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle * game_framework.frame_time) % 2
-        if get_time() - logo_start_time >= 2.0:
-            game_framework.change_mode(play_mode)
+        if get_time() - state_variable.logo_start_time >= 2.0:
+             game_framework.change_mode(play_mode)
     @staticmethod
     def draw(batter):
         match int(batter.frame):
@@ -85,17 +83,18 @@ class Run:
     def draw(batter):
         match int(batter.frame):
             case 0:
-                if state_variable.atk_loc[0]==0 or state_variable.atk_loc[0]==3:
+                print(AtkPlayer.indexnum_G)
+                if state_variable.atk_loc[AtkPlayer.indexnum_G]==1 or state_variable.atk_loc[AtkPlayer.indexnum_G]==4:
                     batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(14, 0, 20, 20, 0, 'h', batter.x, batter.y, 20,30)
             case 1:
-                if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
+                if state_variable.atk_loc[AtkPlayer.indexnum_G] == 1 or state_variable.atk_loc[AtkPlayer.indexnum_G] == 4:
                     batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(34, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
             case 2:
-                if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
+                if state_variable.atk_loc[AtkPlayer.indexnum_G] == 1 or state_variable.atk_loc[AtkPlayer.indexnum_G] == 4:
                     batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(51, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
@@ -131,10 +130,13 @@ class StateMachine:
         self.cur_state.draw(self.batter)
 
 class AtkPlayer:
+    indexnum_G=0
+
     def __init__(self,num):
         self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30)]
         self.x, self.y = self.patrol_locations[int(state_variable.atk_loc[num])]#오른쪽 베이스490,50
         self.indexnum=num
+        AtkPlayer.indexnum_G = self.indexnum  # 수정된 부분
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
@@ -193,9 +195,7 @@ class AtkPlayer:
                 state_variable.atk_loc[self.indexnum] += 1
         return BehaviorTree.SUCCESS
     def is_home_finish(self):
-        print(state_variable.atk_loc[state_variable.atkplayers_num-1])
         if state_variable.atk_loc[self.indexnum]<=4:
-            print('s')
             return BehaviorTree.SUCCESS
         else:
             if state_variable.atk_loc[state_variable.atkplayers_num-1]>=4.5:
@@ -210,7 +210,7 @@ class AtkPlayer:
         SEQ_patrol = Sequence('달리기', a1, a2)
         SEQ_homrun = Sequence('모든베이스달리기', c1,a4, a2)
         root = SEQ_go_stop = Sequence('달리기하며 도착시 멈춤', SEQ_patrol, a3)
-        root = SEQ_homrun
+        #root = SEQ_homrun
         self.bt = BehaviorTree(root)
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))

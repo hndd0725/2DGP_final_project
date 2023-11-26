@@ -1,16 +1,17 @@
 import random
 
-from pico2d import load_image
+from pico2d import load_image, get_time
 
 import game_framework
 import game_world
+import play_mode
 import state_variable
 
 
 
 
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 5.0 # Km / Hour
+RUN_SPEED_KMPH = 7.0 # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -26,12 +27,12 @@ class Ball:
         self.situation=0
         self.size = 10.0
 
+
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
 
     def update(self):
         if self.situation == 0:
-            global ballhit_start_x, ballhit_start_y
             self.t = self.i / 100
             if self.i<50:
                 self.size = 60 * self.t+10
@@ -41,7 +42,19 @@ class Ball:
             self.y = (1 - self.t) * 30 + self.t * (state_variable.hit_ballend_y - 200)
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.t >= 1:
-                self.situation=-1
+                self.i=0
+                self.t = 0
+                self.situation=1
+        if self.situation == 1 and state_variable.ball_catch==True:
+            self.t = self.i / 100
+            self.x = (1 - self.t) *  state_variable.hit_ballend_x + self.t * 490
+            self.y = (1 - self.t) * (state_variable.hit_ballend_y - 200) + self.t * 50
+            self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
+            if self.t >= 1:
+                self.situation = -1
+                state_variable.logo_start_time = get_time()
+                state_variable.ball_catch=False
+            pass
 
 
 

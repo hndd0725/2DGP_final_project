@@ -1,6 +1,7 @@
 from pico2d import *
 
 import game_world
+from ballzone import Ballzone
 
 from batter import Batter
 from grass import Grass
@@ -32,6 +33,7 @@ def init():
     global batter
     global pitcher
     global strikezone
+    global ballzone
 
     grass = Grass()
     game_world.add_object(grass, 0)
@@ -42,6 +44,8 @@ def init():
     game_world.add_object(pitcher, 2)
     strikezone=Strikezone()
     game_world.add_object(strikezone, 2)
+    ballzone = Ballzone()
+    game_world.add_object(ballzone, 2)
 def update():
     game_world.update()
     # delay(0.5)

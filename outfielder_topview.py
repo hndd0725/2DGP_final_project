@@ -19,9 +19,10 @@ def right_down(e):
 
 def click(e):
     return e[0]=='INPUT' and e[1].type==SDL_MOUSEBUTTONDOWN
-def time_out(e):
-    return e[0] == 'TIME_OUT'
-
+def go_throw(e):
+    return e[0] == 'go_throw'
+def go_idle(e):
+    return e[0] == 'go_idle'
 # time_out = lambda e : e[0] == 'TIME_OUT'
 #pitcheridle Action Speed
 TIME_PER_ACTIONthrow = 1.2
@@ -40,38 +41,10 @@ FRAMES_PER_ACTIONrun = 3
 FRAMES_PER_ACTIONrun= FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun#액션프래임속
 #
 PIXEL_PER_METER = (5 / 0.15) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 10.0 # Km / Hour 원래 1
+RUN_SPEED_KMPH = 5.0 # Km / Hour 원래 1
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-class Idle:
-
-    @staticmethod
-    def enter(batter, e):
-        global logo_start_time
-        batter.frame = 0
-        logo_start_time = get_time()
-        pass
-
-    @staticmethod
-    def exit(batter, e):
-        pass
-
-    @staticmethod
-    def do(batter):
-        batter.frame = (batter.frame + FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle * game_framework.frame_time) % 2
-        if get_time() - logo_start_time >= 2.0:
-            game_framework.change_mode(play_mode)
-    @staticmethod
-    def draw(batter):
-        match int(batter.frame):
-            case 0:
-                batter.image.clip_composite_draw(0, 20, 15, 20,0,'h', batter.x, batter.y, 20, 30)
-            case 1:
-                batter.image.clip_composite_draw(35, 20, 15, 25, 0, 'h', batter.x, batter.y, 20, 30)
-        pass
-
-
 class Run:
     @staticmethod
     def enter(batter, e):
@@ -84,27 +57,49 @@ class Run:
 
     @staticmethod
     def do(batter):
-        batter.frame = (batter.frame + FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun * game_framework.frame_time) % 3
+        batter.frame =(batter.frame + FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun * game_framework.frame_time) % 3
         pass
 
     @staticmethod
     def draw(batter):
         match int(batter.frame):
             case 0:
-                if state_variable.atk_loc[0]==0 or state_variable.atk_loc[0]==3:
-                    batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 20, 30)
-                else:
-                    batter.image.clip_composite_draw(14, 0, 20, 20, 0, 'h', batter.x, batter.y, 20,30)
+                batter.image.clip_draw(225, 70, 17, 25,  batter.x, batter.y, 30,30)
             case 1:
-                if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
-                    batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 20, 30)
-                else:
-                    batter.image.clip_composite_draw(34, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
+
+                batter.image.clip_draw(245, 70, 14, 25, batter.x, batter.y, 30, 30)
             case 2:
-                if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
-                    batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 20, 30)
-                else:
-                    batter.image.clip_composite_draw(51, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
+
+                batter.image.clip_draw(259, 70, 14, 25, batter.x, batter.y, 30, 30)
+class Idle:
+    @staticmethod
+    def enter(batter, e):
+        batter.frame = 0
+        pass
+
+    @staticmethod
+    def exit(batter, e):
+        pass
+
+    @staticmethod
+    def do(batter):
+        batter.frame =(batter.frame + FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle * game_framework.frame_time) % 2
+        pass
+
+    @staticmethod
+    def draw(batter):
+        match int(batter.frame):
+            case 0:
+                # if state_variable.atk_loc[0]==0 or state_variable.atk_loc[0]==3:
+                   batter.image.clip_draw( 208, 70, 17, 25, batter.x, batter.y, 30, 30)
+                # else:
+                  #  batter.image.clip_composite_draw(14, 0, 20, 20, 0, 'h', batter.x, batter.y, 20,30)
+            case 1:
+                # if state_variable.atk_loc[0] == 0 or state_variable.atk_loc[0] == 3:
+                     batter.image.clip_draw(225, 70, 17, 25, batter.x, batter.y,30, 30)
+                # else:
+                   # batter.image.clip_composite_draw(34, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
+
 class Throw:
     @staticmethod
     def enter(batter, e):
@@ -113,8 +108,6 @@ class Throw:
 
     @staticmethod
     def exit(batter, e):
-        batter.fire_ball(
-            random.randint(1, 2))#변화구는 2번
         pass
 
     @staticmethod
@@ -124,33 +117,33 @@ class Throw:
     def draw(batter):
         match int(batter.frame):
             case 0:
-                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 30, 30)
             case 1:
-                batter.image.clip_draw(208 + int(batter.frame)* 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame)* 16, 130, 16, 30, batter.x, batter.y, 30, 30)
             case 2:
-                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 30, 30)
             case 3:
-                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + int(batter.frame) * 16, 130, 16, 30, batter.x, batter.y, 30, 30)
             case 4:
-                batter.image.clip_draw(208 +int(batter.frame) * 16, 130, 25, 30, batter.x, batter.y, 50, 80)
+                batter.image.clip_draw(208 +int(batter.frame) * 16, 130, 25, 30, batter.x, batter.y, 30, 30)
             case 5:
-                batter.image.clip_draw(208 + 4 * 16 + 25, 130, 25, 30, batter.x, batter.y, 60, 80)
+                batter.image.clip_draw(208 + 4 * 16 + 25, 130, 25, 30, batter.x, batter.y, 30, 30)
             case 6:
-                batter.image.clip_draw(208 + 4 * 16 + 25 + 25, 130, 14, 30, batter.x, batter.y, 50, 80)
+                batter.image.clip_draw(208 + 4 * 16 + 25 + 25, 130, 14, 30, batter.x, batter.y, 30, 30)
             case 7:
-                batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 50, 80)
+                batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 30, 30)
             case 8:
-                batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 50, 80)
-                batter.state_machine.handle_event(('TIME_OUT', 0))
+                batter.image.clip_draw(208 + 4 * 16 + 25 + 25 + 14, 130, 17, 30, batter.x, batter.y, 30, 30)
+                batter.state_machine.handle_event(('go_idle', 0))
+                state_variable.ball_catch=True
 class StateMachine:
     def __init__(self, batter):
         self.batter = batter
         self.cur_state = Run
         self.transitions = {
-            Idle: {right_down: Run},
-            Run: {time_out:Idle}
-
-
+            Idle:{right_down:Run},
+            Throw: {go_idle:Idle},
+            Run: {go_throw:Throw}
         }
 
     def start(self):
@@ -172,11 +165,11 @@ class StateMachine:
     def draw(self):
         self.cur_state.draw(self.batter)
 
-class AtkPlayer:
-    def __init__(self,num):
+class Outfielder:
+    def __init__(self):
         self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30)]
-        self.x, self.y = self.patrol_locations[int(state_variable.atk_loc[num])]#오른쪽 베이스490,50
-        self.indexnum=num
+        self.x, self.y = 250,350#550,350
+        self.indexnum=0
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
@@ -184,15 +177,11 @@ class AtkPlayer:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.state = 'Idle'
-        self.i=0
-        self.t=0
         self.situation=0
-        self.tx, self.ty = 1000, 1000
+        self.tx, self.ty = state_variable.hit_ballend_x,(state_variable.hit_ballend_y - 200)
         self.loc_no=0
         self.speed=0
         self.build_behavior_tree()
-
-
     def update(self):
         self.state_machine.update()
         self.bt.run()
@@ -225,28 +214,26 @@ class AtkPlayer:
     def get_patrol_location(self):
         self.tx, self.ty = self.patrol_locations[int(state_variable.atk_loc[self.indexnum]+1)]
         return BehaviorTree.SUCCESS
-    def is_home_finish(self):
-        if self.loc_no<=4:
-            return BehaviorTree.SUCCESS
-        else:
-            self.state_machine.handle_event(('TIME_OUT', 0))
-            return  BehaviorTree.FAIL
+
+    def draw_ball(self):
+        self.state_machine.handle_event(('go_throw', 0))
+        return BehaviorTree.RUNNING
     def build_behavior_tree(self):
         a2 = Action('Move to', self.move_to)
-        a1=Action('달리기위치 가져오기',self.get_patrol_location)
+        a1=Action('던지기',self.draw_ball)
         a3=Action('멈춤',self.stop)
-        c1=Condition('홈까지 도착?',self.is_home_finish)
-        SEQ_patrol = Sequence('달리기', a1, a2)
-        #SEQ_homrun = Sequence('모든베이스달리기', c1,a1, a2)
-        root = SEQ_go_stop = Sequence('달리기하며 도착시 멈춤', SEQ_patrol, a3)
-        #root = SEQ_homrun
+        SEQ_run_trow = Sequence('달던,', a2, a1)
+
+        root=SEQ_run_trow
         self.bt = BehaviorTree(root)
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
+        draw_rectangle(*self.get_bb())
         self.state_machine.draw()
-
+    def get_bb(self):
+        return self.x - 15, self.y - 15, self.x + 10, self.y + 10
 
 
 

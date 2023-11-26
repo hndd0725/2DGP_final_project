@@ -2,7 +2,8 @@
 from pico2d import *
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
-
+import random
+import math
 import game_framework
 import game_world
 from ball import Ball
@@ -114,7 +115,7 @@ class Hit:
                 batter.image.clip_draw(32, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
             case 3:
                 batter.image.clip_draw(62, 90, 30, 40, batter.x + 50, batter.y, 200, 250)
-                state_variable.hit_ok = True
+                state_variable.swing = True
             case 4:
                 batter.image.clip_draw(92, 90, 25, 40, batter.x + 50, batter.y, 200, 250)
             case 5:
@@ -164,6 +165,7 @@ class Batter:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.timer=0
+        self.font = load_font('ENCR10B.TTF', 25)
     def update(self):
         self.state_machine.update()
 
@@ -172,6 +174,9 @@ class Batter:
 
     def draw(self):
         self.state_machine.draw()
+        self.font.draw(self.x - 200, self.y + 60,"Strike " f'{ state_variable.strike_num}', (255, 0, 0))
+        self.font.draw(self.x - 200, self.y + 40, "Ball " f'{state_variable.ball_num}', (0, 0, 255))
+
 
 
     def fire_ball(self,sit):
