@@ -1,6 +1,9 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import *
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
+
+import attackplayer_topview
+import point
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 
 import game_framework
@@ -34,7 +37,7 @@ FRAMES_PER_ACTIONrun = 3
 FRAMES_PER_ACTIONrun= FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun#액션프래임속
 #
 PIXEL_PER_METER = (5 / 0.15) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 10.0 # Km / Hour 원래 1
+RUN_SPEED_KMPH = 2.0 # Km / Hour 원래 1
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -42,6 +45,7 @@ class Idle:
 
     @staticmethod
     def enter(batter, e):
+        state_variable.logo_start_time = get_time()
         batter.frame = 0
         pass
 
@@ -52,8 +56,9 @@ class Idle:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle * game_framework.frame_time) % 2
-        if get_time() - state_variable.logo_start_time >= 2.0:
-             game_framework.change_mode(play_mode)
+        if get_time() - state_variable.logo_start_time >= 1.0:
+            state_variable.logo_start_time = 1000000000000
+            game_framework.change_mode(play_mode)
     @staticmethod
     def draw(batter):
         match int(batter.frame):
@@ -77,24 +82,24 @@ class Run:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun * game_framework.frame_time) % 3
+
         pass
 
     @staticmethod
     def draw(batter):
         match int(batter.frame):
             case 0:
-                print(AtkPlayer.indexnum_G)
-                if state_variable.atk_loc[AtkPlayer.indexnum_G]==1 or state_variable.atk_loc[AtkPlayer.indexnum_G]==4:
+                if state_variable.atk_loc[batter.indexnum]==0 or state_variable.atk_loc[batter.indexnum]==3:
                     batter.image.clip_draw( 14, 0, 20, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(14, 0, 20, 20, 0, 'h', batter.x, batter.y, 20,30)
             case 1:
-                if state_variable.atk_loc[AtkPlayer.indexnum_G] == 1 or state_variable.atk_loc[AtkPlayer.indexnum_G] == 4:
+                if state_variable.atk_loc[batter.indexnum] == 0 or state_variable.atk_loc[batter.indexnum] == 3:
                     batter.image.clip_draw(34, 0, 17, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(34, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
             case 2:
-                if state_variable.atk_loc[AtkPlayer.indexnum_G] == 1 or state_variable.atk_loc[AtkPlayer.indexnum_G] == 4:
+                if state_variable.atk_loc[batter.indexnum] == 0 or state_variable.atk_loc[batter.indexnum] == 3:
                     batter.image.clip_draw(51, 0, 17, 20, batter.x, batter.y, 20, 30)
                 else:
                     batter.image.clip_composite_draw(51, 0, 17, 20, 0, 'h', batter.x, batter.y, 20, 30)
@@ -130,13 +135,14 @@ class StateMachine:
         self.cur_state.draw(self.batter)
 
 class AtkPlayer:
-    indexnum_G=0
-
     def __init__(self,num):
-        self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30)]
-        self.x, self.y = self.patrol_locations[int(state_variable.atk_loc[num])]#오른쪽 베이스490,50
+        self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30),(400,-100),(400,-100)]
+        if state_variable.atk_life[num]==-1:
+            state_variable.atk_loc[num]=6
+            self.x, self.y=self.patrol_locations[int(state_variable.atk_loc[num])]
+        else:
+            self.x, self.y = self.patrol_locations[int(state_variable.atk_loc[num])]#오른쪽 베이스490,50
         self.indexnum=num
-        AtkPlayer.indexnum_G = self.indexnum  # 수정된 부분
         self.frame = 0
         self.action = 3#오른쪽idle
         self.dir = 0
@@ -172,6 +178,7 @@ class AtkPlayer:
         else:
             return BehaviorTree.RUNNING
     def stop(self):
+        state_variable.atk_safe = True
         if state_variable.atk_loc[self.indexnum]<4:
             if self.state=='W':
                 if self.indexnum==0:
@@ -180,6 +187,10 @@ class AtkPlayer:
                     state_variable.atk_loc[self.indexnum] += 1
                     print( state_variable.atk_loc[self.indexnum],self.indexnum)
             self.state = 'k'
+            if state_variable.atk_loc[self.indexnum]==4:
+                state_variable.my_point+=1
+            if state_variable.state_4ball:
+                state_variable.state_4ball=False
             self.state_machine.handle_event(('TIME_OUT', 0))
         return BehaviorTree.RUNNING
     def get_patrol_location(self):

@@ -139,7 +139,10 @@ class Throw:
 class StateMachine:
     def __init__(self, batter):
         self.batter = batter
-        self.cur_state = Run
+        if state_variable.state_4ball == False:
+            self.cur_state = Run
+        else:
+            self.cur_state = Idle
         self.transitions = {
             Idle:{right_down:Run},
             Throw: {go_idle:Idle},
@@ -184,7 +187,8 @@ class Outfielder:
         self.build_behavior_tree()
     def update(self):
         self.state_machine.update()
-        self.bt.run()
+        if state_variable.state_4ball == False:
+            self.bt.run()
     def distance_less_than(self, x1, y1, x2, y2, r):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2

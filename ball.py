@@ -36,7 +36,7 @@ class Ball:
         self.throw_ballend_x=random.randint(ballzone.left, ballzone.right)#430
         self.throw_ballend_y=random.randint(ballzone.bottom, ballzone.top)#100
         state_variable.hit_ballend_x=random.randint(80, 550)
-        state_variable.hit_ballend_y=random.randint(400, 900)
+        state_variable.hit_ballend_y=random.randint(400, 600)
         self.one_swing=0
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
@@ -75,6 +75,13 @@ class Ball:
                         else:
                             state_variable.ball_num += 1
                     game_world.remove_object(self)
+                if state_variable.strike_num==3:
+                    state_variable.strike_num=0
+                    state_variable.ball_num=0
+                    state_variable.three_out += 1
+                elif state_variable.ball_num==4:
+                    state_variable.strike_num = 0
+                    state_variable.ball_num = 0
         if self.situation==1:#직선구
                 self.t = self.i / 100
                 self.size=30*self.t
@@ -102,6 +109,18 @@ class Ball:
                         else:
                             state_variable.ball_num += 1
                     game_world.remove_object(self)
+                if state_variable.strike_num==3:
+                    state_variable.strike_num=0
+                    state_variable.ball_num=0
+                    state_variable.three_out+=1
+                elif state_variable.ball_num==4:
+                    state_variable.strike_num = 0
+                    state_variable.ball_num = 0
+                    state_variable.atkplayers_num += 1
+                    state_variable.state_4ball=True
+                    #game_world.remove_object(self)
+                    game_framework.change_mode(topview_mode)
+
         if self.situation == 0:  # 타자 칠때
             self.t = self.i / 100
             self.size = 30 * (1-self.t)
