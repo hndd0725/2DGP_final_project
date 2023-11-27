@@ -49,8 +49,10 @@ class Ball:
                 self.x = (1 - self.t) *  state_variable.hit_ballend_x + self.t * 490
                 self.y = (1 - self.t) * (state_variable.hit_ballend_y - 200) + self.t * 50
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
+                print(state_variable.atk_safe)
                 if self.t >= 1:
                     if state_variable.atk_safe==False:
+                        print('out')
                         state_variable.three_out+=1
                         state_variable.atk_life[state_variable.atkplayers_num-1]=-1
                         state_variable.atk_safe=False
@@ -58,6 +60,7 @@ class Ball:
                             state_variable.three_out=0
                             state_variable.strike_num = 0
                             state_variable.ball_num = 0
+                            state_variable.other_point+=random.randint(0,5)
                     self.situation = -1
                     state_variable.ball_catch=False
 

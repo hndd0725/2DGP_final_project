@@ -1,6 +1,7 @@
 from pico2d import *
 
 import game_world
+import state_variable
 from ballzone import Ballzone
 
 from batter import Batter
@@ -38,7 +39,6 @@ def init():
     global point
     grass = Grass()
     game_world.add_object(grass, 0)
-
     batter = Batter()
     game_world.add_object(batter, 2)
     pitcher = Pitcher()
