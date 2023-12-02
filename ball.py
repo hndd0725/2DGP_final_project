@@ -1,10 +1,11 @@
 import random
 
-from pico2d import load_image
+from pico2d import load_image, load_wav
 
 import ballzone
 import game_framework
 import game_world
+import play_mode
 import state_variable
 import strikezone
 import topview_mode
@@ -18,10 +19,12 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 class Ball:
     image = None
-
+    hit_sound=None
     def __init__(self, x = 400, y = 300, velocity = 1,situation=0):
         if Ball.image == None:
             Ball.image = load_image('baseball.PNG')
+            Ball.hit_sound=load_wav('hit_sound.wav')
+            Ball.hit_sound.set_volume(32)
         self.x, self.y, self.velocity = x, y, velocity
         self.t,self.i=0,0
         self.timer=0
@@ -36,7 +39,10 @@ class Ball:
         self.throw_ballend_x=random.randint(ballzone.left, ballzone.right)#430
         self.throw_ballend_y=random.randint(ballzone.bottom, ballzone.top)#100
         state_variable.hit_ballend_x=random.randint(80, 550)
-        state_variable.hit_ballend_y=random.randint(400, 600)
+        if self.throw_ballend_x<=strikezone.left and self.throw_ballend_y>=strikezone.bottom and self.throw_ballend_y<=strikezone.top:
+            state_variable.hit_ballend_y=random.randint(400, 600)
+        else:
+            state_variable.hit_ballend_y = random.randint(400, 500)
         self.one_swing=0
     def draw(self):
         self.image.clip_draw(0, 0, 1500, 1500, self.x, self.y,self.size,self.size)
@@ -54,7 +60,7 @@ class Ball:
                     self.changeball += 1
                 if self.i >= 50:
                     self.changeball -= 1
-                if state_variable.swing and 24.0 <= self.size:
+                if state_variable.swing and 26.0 <= self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
@@ -63,32 +69,45 @@ class Ball:
                     state_variable.strike_num = 0
                     state_variable.ball_num = 0
                     state_variable.atkplayers_num+=1
-                elif state_variable.swing and 24.0 > self.size:
+                    Ball.hit_sound.play()
+                elif state_variable.swing and 26.0 > self.size:
                     if self.one_swing==0:
                         state_variable.strike_num+=1
                         self.one_swing=-1
-                    state_variable.swing=False
+                    state_variable.is_swing_more_one += 1
                 if self.t >= 1:
-                    if state_variable.swing == False:
+                    if state_variable.is_swing_more_one==0:
                         if strikezone.left <= self.throw_ballend_x <= strikezone.right and strikezone.bottom <= self.throw_ballend_y <= strikezone.top:
                             state_variable.strike_num += 1
                         else:
                             state_variable.ball_num += 1
+                    state_variable.swing = False
+                    state_variable.is_swing_more_one = 0
                     game_world.remove_object(self)
                 if state_variable.strike_num==3:
                     state_variable.strike_num=0
                     state_variable.ball_num=0
+                    if state_variable.three_out >= 3:
+                        state_variable.three_out = 0
+                        state_variable.strike_num = 0
+                        state_variable.ball_num = 0
+                        state_variable.other_point += random.randint(0, 5)
+                        game_framework.change_mode(play_mode)
                     state_variable.three_out += 1
                 elif state_variable.ball_num==4:
                     state_variable.strike_num = 0
                     state_variable.ball_num = 0
+                    state_variable.atkplayers_num += 1
+                    state_variable.state_4ball = True
+                    # game_world.remove_object(self)
+                    game_framework.change_mode(topview_mode)
         if self.situation==1:#직선구
                 self.t = self.i / 100
                 self.size=30*self.t
                 self.x = (1 - self.t) * 420 + self.t * self.throw_ballend_x
                 self.y = (1 - self.t) * 220 + self.t * self.throw_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
-                if state_variable.swing and 15.0<=self.size:
+                if state_variable.swing and 27.0<=self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
@@ -97,22 +116,32 @@ class Ball:
                     state_variable.strike_num=0
                     state_variable.ball_num = 0
                     state_variable.atkplayers_num += 1
-                elif state_variable.swing and 24.0 > self.size:
+                    state_variable.is_swing_more_one+=1
+                    Ball.hit_sound.play()
+                elif state_variable.swing and 27.0 > self.size:
                     if self.one_swing == 0:
                         state_variable.strike_num += 1
                         self.one_swing = -1
-                    state_variable.swing = False
+                    state_variable.is_swing_more_one += 1
                 if self.t>=1:
-                    if state_variable.swing==False:
+                    if state_variable.is_swing_more_one==0:
                         if strikezone.left<=self.throw_ballend_x <=strikezone.right and strikezone.bottom<=self.throw_ballend_y<=strikezone.top:
                             state_variable.strike_num += 1
                         else:
                             state_variable.ball_num += 1
+                    state_variable.swing = False
+                    state_variable.is_swing_more_one = 0
                     game_world.remove_object(self)
                 if state_variable.strike_num==3:
                     state_variable.strike_num=0
                     state_variable.ball_num=0
                     state_variable.three_out+=1
+                    if state_variable.three_out>=3:
+                        state_variable.three_out = 0
+                        state_variable.strike_num = 0
+                        state_variable.ball_num = 0
+                        state_variable.other_point += random.randint(0, 5)
+                        game_framework.change_mode(play_mode)
                 elif state_variable.ball_num==4:
                     state_variable.strike_num = 0
                     state_variable.ball_num = 0
@@ -129,6 +158,8 @@ class Ball:
             self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
             if self.t >= 1:
                 game_world.remove_object(self)
-                game_framework.change_mode(topview_mode)
+                state_variable.is_swing_more_one = 0
                 state_variable.swing = False
+                game_framework.change_mode(topview_mode)
+
 

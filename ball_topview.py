@@ -61,6 +61,7 @@ class Ball:
                             state_variable.strike_num = 0
                             state_variable.ball_num = 0
                             state_variable.other_point+=random.randint(0,5)
+                            game_framework.change_mode(play_mode)
                     self.situation = -1
                     state_variable.ball_catch=False
 

@@ -37,7 +37,7 @@ FRAMES_PER_ACTIONrun = 3
 FRAMES_PER_ACTIONrun= FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun#액션프래임속
 #
 PIXEL_PER_METER = (5 / 0.15) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 1.0 # Km / Hour 원래 1
+RUN_SPEED_KMPH = 1.5 # Km / Hour 원래 1
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -60,6 +60,9 @@ class Idle:
         if get_time() - state_variable.logo_start_time >= 1.0:
             state_variable.atk_safe = False
             state_variable.logo_start_time = 1000000000000
+            if state_variable.state_4ball:
+                state_variable.state_4ball=False
+
             game_framework.change_mode(play_mode)
     @staticmethod
     def draw(batter):
@@ -138,7 +141,7 @@ class StateMachine:
 
 class AtkPlayer:
     def __init__(self,num):
-        self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30),(400,-100),(400,-100)]
+        self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30),(400,-1000),(400,-1000)]
         if state_variable.atk_life[num]==-1:
             state_variable.atk_loc[num]=6
             self.x, self.y=self.patrol_locations[int(state_variable.atk_loc[num])]
@@ -190,8 +193,6 @@ class AtkPlayer:
             self.state = 'k'
             if state_variable.atk_loc[self.indexnum]==4:
                 state_variable.my_point+=1
-            if state_variable.state_4ball:
-                state_variable.state_4ball=False
             self.state_machine.handle_event(('TIME_OUT', 0))
         return BehaviorTree.RUNNING
     def get_patrol_location(self):

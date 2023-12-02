@@ -120,6 +120,7 @@ class Hit:
                 batter.image.clip_draw(92, 90, 25, 40, batter.x + 50, batter.y, 200, 250)
             case 5:
                 batter.image.clip_draw(117, 90, 25, 38, batter.x, batter.y, 200, 250)
+                state_variable.swing = False
                 batter.state_machine.handle_event(('TIME_OUT', 0))
 
 

@@ -211,7 +211,7 @@ class Outfielder:
                     state_variable.atk_loc[self.indexnum] += 0.5
                 else:
                     state_variable.atk_loc[self.indexnum] += 1
-                    print( state_variable.atk_loc[self.indexnum],self.indexnum)
+                    #print( state_variable.atk_loc[self.indexnum],self.indexnum)
             self.state = 'k'
             self.state_machine.handle_event(('TIME_OUT', 0))
         return BehaviorTree.RUNNING
@@ -234,7 +234,7 @@ class Outfielder:
         self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
         self.state_machine.draw()
     def get_bb(self):
         return self.x - 15, self.y - 15, self.x + 10, self.y + 10
