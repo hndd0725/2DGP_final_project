@@ -37,7 +37,7 @@ FRAMES_PER_ACTIONrun = 3
 FRAMES_PER_ACTIONrun= FRAMES_PER_ACTIONrun * ACTION_PER_TIMErun#액션프래임속
 #
 PIXEL_PER_METER = (5 / 0.15) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 1.5 # Km / Hour 원래 1
+RUN_SPEED_KMPH = 2 # Km / Hour 원래 1
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -45,7 +45,8 @@ class Idle:
 
     @staticmethod
     def enter(batter, e):
-        state_variable.logo_start_time = get_time()
+        if batter.indexnum+1==state_variable.atkplayers_num:
+            state_variable.logo_start_time = get_time()
         state_variable.atk_safe = True
         batter.frame = 0
         pass
@@ -57,13 +58,14 @@ class Idle:
     @staticmethod
     def do(batter):
         batter.frame = (batter.frame + FRAMES_PER_ACTIONidle * ACTION_PER_TIMEidle * game_framework.frame_time) % 2
-        if get_time() - state_variable.logo_start_time >= 1.0:
-            state_variable.atk_safe = False
-            state_variable.logo_start_time = 1000000000000
-            if state_variable.state_4ball:
-                state_variable.state_4ball=False
+        if batter.indexnum+1 == state_variable.atkplayers_num:
+            if get_time() - state_variable.logo_start_time >= 2.5:
+                state_variable.atk_safe = False
+                state_variable.logo_start_time = 1000000000000
+                if state_variable.state_4ball:
+                    state_variable.state_4ball=False
 
-            game_framework.change_mode(play_mode)
+                game_framework.change_mode(play_mode)
     @staticmethod
     def draw(batter):
         match int(batter.frame):
@@ -189,7 +191,7 @@ class AtkPlayer:
                     state_variable.atk_loc[self.indexnum] += 0.5
                 else:
                     state_variable.atk_loc[self.indexnum] += 1
-                    print( state_variable.atk_loc[self.indexnum],self.indexnum)
+                    #print( state_variable.atk_loc[self.indexnum],self.indexnum)
             self.state = 'k'
             if state_variable.atk_loc[self.indexnum]==4:
                 state_variable.my_point+=1

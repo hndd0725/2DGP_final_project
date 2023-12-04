@@ -5,15 +5,15 @@ from pico2d import load_image, load_wav
 import ballzone
 import game_framework
 import game_world
+import lose_mode
 import play_mode
 import state_variable
 import strikezone
 import topview_mode
-
-
+import win_mode
 
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 10.0 # Km / Hour
+RUN_SPEED_KMPH = 13.0 # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -40,7 +40,7 @@ class Ball:
         self.throw_ballend_y=random.randint(ballzone.bottom, ballzone.top)#100
         state_variable.hit_ballend_x=random.randint(80, 550)
         if self.throw_ballend_x<=strikezone.left and self.throw_ballend_y>=strikezone.bottom and self.throw_ballend_y<=strikezone.top:
-            state_variable.hit_ballend_y=random.randint(400, 600)
+            state_variable.hit_ballend_y=random.randint(500, 700)
         else:
             state_variable.hit_ballend_y = random.randint(400, 500)
         self.one_swing=0
@@ -87,13 +87,24 @@ class Ball:
                 if state_variable.strike_num==3:
                     state_variable.strike_num=0
                     state_variable.ball_num=0
+                    state_variable.three_out += 1
                     if state_variable.three_out >= 3:
                         state_variable.three_out = 0
                         state_variable.strike_num = 0
                         state_variable.ball_num = 0
+                        state_variable.atk_loc = [0 for _ in range(0, 100)]
+                        state_variable.atk_life = [0 for _ in range(0, 100)]
+                        state_variable.game_num += 1
+                        state_variable.atkplayers_num = 0
                         state_variable.other_point += random.randint(0, 5)
-                        game_framework.change_mode(play_mode)
-                    state_variable.three_out += 1
+                        if state_variable.game_num==3:
+                            if state_variable.my_point>=state_variable.other_point:
+                                game_framework.change_mode(win_mode)
+                            else:
+                                game_framework.change_mode(lose_mode)
+                        else:
+                            game_framework.change_mode(play_mode)
+
                 elif state_variable.ball_num==4:
                     state_variable.strike_num = 0
                     state_variable.ball_num = 0
@@ -107,7 +118,8 @@ class Ball:
                 self.x = (1 - self.t) * 420 + self.t * self.throw_ballend_x
                 self.y = (1 - self.t) * 220 + self.t * self.throw_ballend_y
                 self.i += 1 * RUN_SPEED_PPS * game_framework.frame_time
-                if state_variable.swing and 27.0<=self.size:
+                print(self.size)
+                if state_variable.swing and 26.0<=self.size:
                     ballhit_start_x=self.x
                     ballhit_start_y = self.y
                     self.situation = 0
@@ -118,7 +130,7 @@ class Ball:
                     state_variable.atkplayers_num += 1
                     state_variable.is_swing_more_one+=1
                     Ball.hit_sound.play()
-                elif state_variable.swing and 27.0 > self.size:
+                elif state_variable.swing and 26.0 > self.size:
                     if self.one_swing == 0:
                         state_variable.strike_num += 1
                         self.one_swing = -1
@@ -140,8 +152,18 @@ class Ball:
                         state_variable.three_out = 0
                         state_variable.strike_num = 0
                         state_variable.ball_num = 0
+                        state_variable.atk_loc = [0 for _ in range(0, 100)]
+                        state_variable.atk_life = [0 for _ in range(0, 100)]
+                        state_variable.atkplayers_num = 0
+                        state_variable.game_num +=1
                         state_variable.other_point += random.randint(0, 5)
-                        game_framework.change_mode(play_mode)
+                        if state_variable.game_num == 3:
+                            if state_variable.my_point >= state_variable.other_point:
+                                game_framework.change_mode(win_mode)
+                            else:
+                                game_framework.change_mode(lose_mode)
+                        else:
+                            game_framework.change_mode(play_mode)
                 elif state_variable.ball_num==4:
                     state_variable.strike_num = 0
                     state_variable.ball_num = 0

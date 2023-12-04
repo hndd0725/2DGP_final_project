@@ -10,7 +10,7 @@ def init():
     global bgm
     image = load_image('baseball_title.jpg')
     bgm = load_music('title_sound.mp3')
-    bgm.set_volume(50)
+    bgm.set_volume(30)
     bgm.repeat_play()
     pass
 def finish():
@@ -20,7 +20,8 @@ def update():
 def draw():
     clear_canvas()
     image.draw(400,300,800,600)
-    load_font('ENCR10B.TTF', 45).draw(150, 300, "Press the space bar", (255, 0, 255))
+    if get_time()%2<1:
+        load_font('ENCR10B.TTF', 45).draw(150, 300, "Press the space bar", (255, 0, 255))
     update_canvas()
     pass
 def handle_events():

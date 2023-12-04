@@ -1,4 +1,4 @@
-from pico2d import get_events, load_image, clear_canvas, update_canvas, get_time
+from pico2d import get_events, load_image, clear_canvas, update_canvas, get_time, load_music, load_wav
 from sdl2 import SDL_QUIT
 
 import game_framework
@@ -29,6 +29,8 @@ def init():
     global atkplayers
     global pitcher
     global outfielder
+    global audience_sound
+    state_variable.ball_catch=False
     atkplayers = [AtkPlayer(i) for i in range(0,100)]
     for i in range(0,state_variable.atkplayers_num):
         game_world.add_object(atkplayers[i], 1)
@@ -45,8 +47,11 @@ def init():
     game_world.add_object(ball, 1)
     # outfielder=Outfielder()
     # game_world.add_object(outfielder, 2)
-
+    audience_sound = load_wav('audience applause.wav')
+    audience_sound.set_volume(32)
+    audience_sound.play()
     image = load_image('SNES - Human Baseball JPN - Tokyo.png')
+
     pass
 def finish():
     game_world.clear()

@@ -5,9 +5,11 @@ from pico2d import load_image, get_time
 import attackplayer_topview
 import game_framework
 import game_world
+import lose_mode
 import play_mode
 import state_variable
 import topview_mode
+import win_mode
 
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 7.0 # Km / Hour
@@ -60,8 +62,18 @@ class Ball:
                             state_variable.three_out=0
                             state_variable.strike_num = 0
                             state_variable.ball_num = 0
+                            state_variable.atk_loc = [0 for _ in range(0, 100)]
+                            state_variable.atk_life = [0 for _ in range(0, 100)]
+                            state_variable.atkplayers_num=0
+                            state_variable.game_num+=1
                             state_variable.other_point+=random.randint(0,5)
-                            game_framework.change_mode(play_mode)
+                            if state_variable.game_num == 3:
+                                if state_variable.my_point >= state_variable.other_point:
+                                    game_framework.change_mode(win_mode)
+                                else:
+                                    game_framework.change_mode(lose_mode)
+                            else:
+                                game_framework.change_mode(play_mode)
                     self.situation = -1
                     state_variable.ball_catch=False
 

@@ -23,6 +23,7 @@ class Point:
         self.font.draw(self.x , self.y , "my_point: " f'{state_variable.my_point}', (0, 255, 255))
         self.font.draw(self.x , self.y-30 , "other_point: " f'{state_variable.other_point}', (255, 0, 255))
         self.font.draw(self.x, self.y - 60, "out: " f'{state_variable.three_out}', (255, 0, 0))
+        self.font.draw(self.x+500, self.y , "game round: " f'{state_variable.game_num}', (255, 0, 0))
     def get_bb_strikezone(self):
         return left, bottom, right, top
 

@@ -93,7 +93,7 @@ class Hit:
     @staticmethod
     def enter(batter, e):
         batter.frame = 0 # pico2d import 필요
-
+        batter.swing_sound.play()
         pass
 
     @staticmethod
@@ -167,6 +167,8 @@ class Batter:
         self.state_machine.start()
         self.timer=0
         self.font = load_font('ENCR10B.TTF', 25)
+        self.swing_sound=load_wav('swing_sound.wav')
+        self.swing_sound.set_volume(32)
     def update(self):
         self.state_machine.update()
 

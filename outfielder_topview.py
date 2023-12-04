@@ -171,7 +171,7 @@ class StateMachine:
 class Outfielder:
     def __init__(self):
         self.patrol_locations = [(400, -30),(490, 50), (400, 150), (310, 50), (400, -30),(400, -30)]
-        self.x, self.y = 250,350#550,350
+        self.x, self.y = 400, 350
         self.indexnum=0
         self.frame = 0
         self.action = 3#오른쪽idle

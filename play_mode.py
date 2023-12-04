@@ -1,6 +1,7 @@
 from pico2d import *
 
 import game_world
+import play_mode
 import state_variable
 from ballzone import Ballzone
 
@@ -14,7 +15,7 @@ from strikezone import Strikezone
 
 # Game object class here
 
-
+bgm2=None
 def handle_events():
 
     events = get_events()
@@ -37,6 +38,8 @@ def init():
     global strikezone
     global ballzone
     global point
+    global bgm
+
     grass = Grass()
     game_world.add_object(grass, 0)
     batter = Batter()
@@ -49,6 +52,11 @@ def init():
     game_world.add_object(ballzone, 2)
     point = Point()
     game_world.add_object(point, 2)
+    if play_mode.bgm2==None:
+        bgm = load_music('background2.mp3')
+        bgm.set_volume(22)
+        bgm.repeat_play()
+        play_mode.bgm2=True
 def update():
     game_world.update()
     # delay(0.5)
